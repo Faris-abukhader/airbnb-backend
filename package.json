@@ -1,0 +1,33 @@
+{
+  "name": "airbnb-backend",
+  "version": "1.0.0",
+  "description": "web application build by fastify framework for clone airbnb project",
+  "main": "index.js",
+  "scripts": {
+    "start":"nodemon app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Faris-abukhader/airbnb-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Faris-abukhader/airbnb-backend/issues"
+  },
+  "homepage": "https://github.com/Faris-abukhader/airbnb-backend#readme",
+  "dependencies": {
+    "@fastify/cors": "^8.0.0",
+    "@fastify/env": "^4.0.0",
+    "@fastify/jwt": "^6.1.0",
+    "@fastify/swagger": "^7.4.0",
+    "@prisma/client": "^3.15.2",
+    "fastify": "^4.1.0",
+    "fastify-plugin": "^3.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "nodemon": "^2.0.16",
+    "prisma": "^3.15.2"
+  }
+}

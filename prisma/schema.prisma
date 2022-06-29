@@ -1,0 +1,280 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native","darwin","debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int                 @id @default(autoincrement())
+  email          String?             @unique
+  password       String?
+  role          String               @default("client")
+  client        Client?
+  staff         Staff?
+  @@index([id], map: "user_index")
+}
+
+model Property{
+  id            Int                 @id @default(autoincrement())
+  ownerId       Int  
+  owner         Client @relation(fields: [ownerId],references: [id])
+  name          String
+  coutry        String
+  city          String               
+  address       String
+  street        String
+  zipCode       String
+  numberOFSofa  Int
+  space         Float
+  cancellationPolicy   String
+  guestArrive   String
+  guestDepart   String
+  canSmoke      Boolean
+  canHaveChildren     Boolean
+  acceptPet           Boolean
+  acceptForeigner     Boolean
+  price               Float
+  currency            String
+  hasParking          Boolean
+  hasBreakfast        Boolean
+  ContactPersonName   String
+  countryCode   String
+  phoneNumber   String
+  numberOfBedroom         Int
+  numberOfBathroom        Int
+  numberOfLivingroom      Int
+  type                    String
+  bedOptions              BedOption[]
+  images                  ImageSet?
+  approve                 PropertyApproved?
+  languages               LanguageSpoken[]
+  amenities               PropertyAmenity[]
+  propertyFacility        PropertyFacility[]
+  bookingOrders           BookingOrder[]
+  @@index([id])
+}
+
+model BedOption {
+  id                  Int         @id @default(autoincrement())
+  propertyId          Int
+  proptery            Property @relation(fields: [propertyId],references: [id])
+  kind                String
+  numberOFBed         String
+  @@index([id])
+}
+
+model ImageSet {
+  id                  Int         @id @default(autoincrement())
+  articleId           Int?        @unique
+  properityId         Int?        @unique
+  article             Article? @relation(fields: [articleId],references: [id])
+  property            Property? @relation(fields: [properityId],references: [id])
+  images              Image[]
+  createdAt           DateTime    @default(now())
+  @@index([id])    
+}
+
+model Image{
+  id                  Int         @id @default(autoincrement())
+  imageSetId          Int
+  imageSet            ImageSet @relation(fields: [imageSetId],references: [id])
+  imageUrl            String
+}
+
+model PropertyApproved {
+  id                  Int         @id @default(autoincrement())
+  propertyId          Int @unique
+  staffId             Int
+  staff               Staff @relation(fields: [staffId],references: [id])
+  property            Property @relation(fields: [propertyId],references: [id])
+  isApproved          Boolean
+  approvedDate        DateTime
+  isRefused           Boolean @default(false)
+  dateOfRefused       DateTime
+  createdAt           DateTime @default(now())
+  lastUpdate          DateTime @updatedAt
+  @@index([id])
+}
+
+model LanguageSpoken{
+  id                  Int         @id @default(autoincrement())
+  propertyId          Int
+  property            Property @relation(fields: [propertyId],references: [id])
+  language            String
+}
+
+model Language{
+  id                  Int         @id @default(autoincrement())
+  name                String
+  @@index([id])
+}
+
+model Amenity{
+  id                  Int         @id @default(autoincrement())
+  name                String
+  propertyAmenity     PropertyAmenity? @relation(fields: [id],references: [id])
+  @@index([id])
+}
+
+model PropertyAmenity{
+  id                  Int         @id @default(autoincrement())
+  amenityId           Int   
+  amenities           Amenity []
+  propertyId          Int
+  property            Property @relation(fields: [propertyId],references: [id])      
+  name                String
+}
+
+
+model Facility{
+  id                  Int         @id @default(autoincrement())
+  name                String
+  propertyFacility    PropertyFacility? @relation(fields: [id],references: [id])
+  @@index([id])
+}
+
+model PropertyFacility{
+  id                  Int         @id @default(autoincrement())
+  facilities          Facility[]    
+  propertyId          Int
+  property            Property @relation(fields: [propertyId],references: [id])      
+  name                String
+}
+
+
+model Staff{
+    id                      Int                      @id @default(autoincrement())
+    user                    User @relation(fields: [id],references: [id],onDelete: Cascade)
+    firstName               String
+    secondName              String
+    image                   String
+    createdAt               DateTime @default(now())
+    lastUpdate              DateTime @updatedAt
+    propertyApprove         PropertyApproved[]
+    notification            Notification[]
+    articles                Article[]
+    @@index([id])
+}
+
+
+model Client{
+    id                      Int                      @id
+    user                    User @relation(fields: [id],references: [id],onDelete: Cascade)
+    firstName               String
+    secondName              String
+    image                   String
+    createdAt               DateTime @default(now())
+    lastUpdate              DateTime @updatedAt
+    properties              Property[]
+    notifications           Notification[]
+    @@index([id])
+}
+
+
+model BookingOrder{
+  id                      Int                      @id @default(autoincrement())
+  propertyId              Int
+  property                Property @relation(fields: [propertyId],references: [id])
+  checkIn                 DateTime
+  checkOut                DateTime
+  isForWork               Boolean
+  createdAt               DateTime @default(now())
+  lastUpdate              DateTime @updatedAt
+  reviews                 BookingReview[]
+  guestInfo               GuestInfo?
+  paymentCard             PaymentCard?
+  transaction             Transaction?
+  @@index([id])
+}
+
+model BookingReview{
+  id                     Int                      @id @default(autoincrement())
+  bookingId              Int
+  bookingOrder           BookingOrder @relation(fields: [bookingId],references: [id])
+  stars                  Float
+  content                String
+  createdAt               DateTime @default(now())
+  lastUpdate              DateTime @updatedAt
+  @@index([id])
+}
+
+model GuestInfo{
+  id                     Int                      @id @default(autoincrement())
+  bookingId              Int                      @unique
+  BookingOrder           BookingOrder @relation(fields: [bookingId],references: [id])
+  firstName              String
+  secondName             String
+  email                  String
+  specialRequest         String
+  arrivalTime            DateTime
+  country                String
+  phoneNumber            String
+  @@index([id])
+}
+
+
+model PaymentCard{
+  id                     Int                      @id @default(autoincrement())
+  bookingId              Int                      @unique
+  bookingOrder           BookingOrder @relation(fields: [bookingId],references: [id])
+  cardHolderName         String
+  cardType               String
+  cardNumber             String
+  expirationDate         DateTime
+  @@index([id])
+}
+
+model Transaction{
+  id                     Int                      @id @default(autoincrement())
+  bookingId              Int                      @unique
+  bookingOrder           BookingOrder @relation(fields: [bookingId],references: [id])
+  isPaid                 Boolean
+  dateOfPaid             DateTime
+  isCanceled             Boolean
+  dateOfCanceled         DateTime
+  reasonOfCancelling     String
+  createdAt              DateTime @default(now())
+  lastUpdate             DateTime @updatedAt
+  @@index([id])
+}
+
+
+model Notification {
+  id                     Int                      @id @default(autoincrement())
+  senderId               Int
+  staff                  Staff ? @relation(fields: [senderId],references: [id])
+  recieverId             Int
+  client                 Client @relation(fields: [recieverId],references: [id])
+  title                  String
+  content                String
+  isSeen                 Boolean @default(false)
+  seenAt                 DateTime? 
+  createdAt              DateTime @default(now())
+  @@index([id])
+}
+
+
+model ArticleTopic{
+  id                  Int         @id @default(autoincrement())
+  title               String
+}
+
+model Article{
+  id                  Int         @id @default(autoincrement())
+  topic               String
+  tags                String
+  images              ImageSet?
+  content             String
+  title               String
+  description         String
+  publisherId         Int
+  publisher           Staff @relation(fields: [publisherId],references: [id])
+  seenNumber          Int @default(0)
+  createdAt               DateTime @default(now())
+  lastUpdate              DateTime @updatedAt
+  @@index([id])
+}

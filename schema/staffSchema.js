@@ -8,17 +8,9 @@ const {
   const clientMiddleware = require('../controller/auth')
   const fastify = require('fastify')()
 
-  const staffObject = {
-      type: 'object',
-      properties: {
-        id: { type: 'integer' },
-        firstName: { type: 'string' },
-        secondName: { type: 'string' },
-        image: { type: 'string' },
-        createdAt:{type:'string'},
-        lastUpdate:{type:'string'}
-      },
-    }
+  const {
+    staffObject
+  } = require('../schema/schemaContainer')
   
     const getOneStaffSchema = {
       schema: {

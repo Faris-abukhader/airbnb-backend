@@ -9,19 +9,11 @@ const {
   } = require('../controller/notification')
   const clientMiddleware = require('../controller/auth')
   const fastify = require('fastify')()
+
+  const {
+    notificationObject
+  } = require('../schema/schemaContainer')
   
-  const notificationObject = {
-      type: 'object',
-      properties: {
-        id: { type: 'integer' },
-        senderId: { type: 'integer' },
-        recieverId: { type: 'integer' },
-        title: { type: 'string' },
-        content: { type: 'string' },
-        isSeen: { type: 'integer' },
-        createdAt:{type:'string'}
-      },
-    }
   
     const getOneNotificationSchema = {
       schema: {

@@ -9,22 +9,17 @@ const {
 const clientMiddleware = require('../controller/auth')
 const fastify = require('fastify')()
 
-const user = {
-    type: 'object',
-    properties: {
-      id:{type:'integer'},
-      email: { type: 'string' },
-      password:{type:'string'},
-      role:{type:'string'}
-    },
-  }
+const {
+  userObject
+} = require('../schema/schemaContainer')
+
 
   const getAllUsersSchema = {
     schema: {
       response: {
         200: {
           type: 'array',
-          items: user,
+          items: userObject,
         },
       },
     },
@@ -35,7 +30,7 @@ const user = {
   const getOneUserSchema = {
     schema: {
       response: {
-        200: user,
+        200: userObject,
       },
     },
     handler: getOneUser,
@@ -45,13 +40,16 @@ const user = {
     schema: {
       body: {
         type: 'object',
-        required: ['email','password','firstName','secondName','image'],
+        required: ['email','firstName','secondName','image'],
         properties: {
-          name: { type: 'string' },
+          email: { type: 'string' },
+          firstName: { type: 'string' },
+          secondName: { type: 'string' },
+          image: { type: 'string' },
         },
       },
       response: {
-        201: user,
+        201: userObject,
       },
     },
     handler: postOneUser,
@@ -60,7 +58,7 @@ const user = {
   const updateOneUserSchema = {
     schema: {
       response: {
-        200: user,
+        200: userObject,
       },
     },
     handler: updateOneUser,
@@ -73,7 +71,7 @@ const user = {
       response: {
         200: {
           type: 'object',
-          item: user
+          item: userObject
         },
       },
     },

@@ -8,17 +8,10 @@ const {
   const clientMiddleware = require('../controller/auth')
   const fastify = require('fastify')()
 
-  const clientObject = {
-      type: 'object',
-      properties: {
-        id: { type: 'integer' },
-        firstName: { type: 'string' },
-        secondName: { type: 'string' },
-        image: { type: 'string' },
-        createdAt:{type:'string'},
-        lastUpdate:{type:'string'}
-      },
-    }
+  const {
+    clientObject
+  } = require('../schema/schemaContainer')
+
   
     const getOneClientSchema = {
       schema: {

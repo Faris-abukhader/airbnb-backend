@@ -9,15 +9,11 @@ const {
   } = require('../controller/language')
   const clientMiddleware = require('../controller/auth')
   const fastify = require('fastify')()
-  
-  const languageObject = {
-      type: 'object',
-      properties: {
-        id: { type: 'integer' },
-        name: { type: 'string' },
-      },
-    }
-  
+
+  const {
+    languageObject
+  } = require('../schema/schemaContainer')
+    
     const getOneLanguageSchema = {
       schema: {
         response: {
@@ -115,6 +111,7 @@ const {
       },
       handler: deleteAllLanguages,
     }
+
   
     module.exports = {
         getOneLanguageSchema,

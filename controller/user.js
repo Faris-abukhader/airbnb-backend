@@ -5,13 +5,11 @@ const prisma = new PrismaClient()
 const getAllUsers = async(req, reply) => {
   try{
     const users = await prisma.user.findMany({
-      select:{
-          id:true,
-          email:true,
-          password:true,
-          role:true
+      include:{
+        client:true,
+        staff:true
       }
-  })
+    })
   reply.send(users)
   }catch(error){
     reply.send(error)
@@ -34,11 +32,10 @@ const getAllUsers = async(req, reply) => {
   
   const postOneUser = async(req, reply) => {
     try{
-      const { email,password,firstName,secondName,image} = req.body
+      const { email,firstName,secondName,image} = req.body
       await prisma.user.create({
           data:{
               email,
-              password,
               role:'client'
           }
       }).then(async(newUser)=>{

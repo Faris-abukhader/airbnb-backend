@@ -9,14 +9,9 @@ const {
 } = require('../controller/articleTopic')
 const clientMiddleware = require('../controller/auth')
 const fastify = require('fastify')()
-
-const articleTopicObject = {
-    type: 'object',
-    properties: {
-      id: { type: 'integer' },
-      title: { type: 'string' },
-    },
-  }
+const {
+  articleTopicObject,
+} = require('../schema/schemaContainer')
 
   const getArticleTopicObject = {
     schema: {

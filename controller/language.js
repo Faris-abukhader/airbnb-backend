@@ -18,7 +18,6 @@ const getOneLanguage = async(req,reply)=>{
 
 const getAllLanguages = async(req,reply)=>{
     try{
-        const id = Number.parseInt(req.params.id)
         const targetLanguages = await prisma.language.findMany({})
         reply.send(targetLanguages)
     }catch(err){

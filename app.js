@@ -1,4 +1,4 @@
-const fastify = require('fastify')({ logger: true })
+const fastify = require('fastify')({ logger: false })
 const PORT = process.env.PORT || 4500
 const {sign,verify, decode} = require('jsonwebtoken')
 const {PrismaClient} = require('@prisma/client')
@@ -53,6 +53,7 @@ fastify.register(fastifyEnv, options)
 // routers . . .
 fastify.register(require('./routes/user'),{ prefix: '/user' })
 fastify.register(require('./routes/property'),{prefix:'/property'})
+fastify.register(require('./routes/order'),{prefix:'/order'})
 fastify.register(require('./routes/articleTopic'),{prefix:'/articleTopic'})
 fastify.register(require('./routes/notification'),{prefix:'/notification'})
 fastify.register(require('./routes/client'),{prefix:'/client'})
@@ -60,6 +61,8 @@ fastify.register(require('./routes/staff'),{prefix:'/staff'})
 fastify.register(require('./routes/language'),{prefix:'/language'})
 fastify.register(require('./routes/facility'),{prefix:'/facility'})
 fastify.register(require('./routes/amenity'),{prefix:'/amenity'})
+fastify.register(require('./routes/article'),{prefix:'/article'})
+fastify.register(require('./routes/cancelationOption'),{prefix:'/cancelationOption'})
 
 // Run the server!
 const start = async () => {
@@ -88,95 +91,3 @@ fastify.post('/test1/:option?',(req,res)=>{
      res.send('no options')
    }
 })
-
-
-let aviableAttributes = [
-  'name',
-  'country',
-  'city',
-  'space',
-  'guestArrive',
-  'guestDepart',
-  'canSmoke',
-  'canHaveChildren',
-  'acceptForeigner',
-  'acceptPet',
-  'type',
-  'price'
-]
-
-const test = async()=>{
-let pageNo = 0
-  let toSkip = false
-    pageNo = 0
-    toSkip = false
-  
-
-    const query = {
-      name:'yiwu',
-      age:22,
-      country:'jordan',
-      city:'hangzhou',
-      space:'9.6',
-      canHaveChildren:'true'
-    }
-    var queryArray = Object.entries(query).filter((item)=>aviableAttributes.indexOf(item[0].toString())!=-1) 
-
-    let OR = []
-
-
-    queryArray.map((item)=>{
-      let tempObj = {}
-      let key = item[0]
-      let value = item[1]
-      if(key=='name'){
-        let key1 = {
-          contains:value
-        }
-        tempObj[key] = key1
-      }else if (key=='space'){
-       tempObj[key] = Number.parseFloat(value)
-      }else{
-        tempObj[key] = key=='canSmoke' || key=='canHaveChildren' || key=='acceptForeigner' || key=='acceptPet' ?  Boolean(value): value 
-      }
-      OR.push(tempObj)
-    })
-  
-    console.log(OR)
-
-    
-    let where = {
-      OR
-    }
-
-    console.log(where)
-
-    await prisma.property.count().then(async(length)=>{
-      let data = await prisma.property.findMany({
-        where,
-        take:25,
-        skip:toSkip ? (pageNo-1)*25:0,
-        include:{
-          owner:true,
-          images:{
-            select:{
-                images:true
-            }
-        },
-        bedOptions:true,
-        approve:{
-            include:{
-                staff:true
-            }
-        },
-        amenities:true,
-        facilities:true,
-        languages:true,
-        bookingOrders:true
-        }
-      })
-      console.log({data,pageNumber:Math.ceil(length/25)})
-  
-    })
-  }
-  // test()

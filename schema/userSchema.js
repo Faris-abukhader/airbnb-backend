@@ -6,8 +6,8 @@ const {
   deleteOneUser,
   deleteAllUsers,
 } = require('../controller/user')
-const clientMiddleware = require('../controller/auth')
-const fastify = require('fastify')()
+const adminMiddleware = require('../prevalidation/admin')
+const websiteMiddleware = require('../prevalidation/website')
 
 const {
   userObject
@@ -23,7 +23,7 @@ const {
         },
       },
     },
-    // preValidation:clientMiddleware,
+    preValidation:adminMiddleware,
     handler: getAllUsers,
   }
   
@@ -33,6 +33,7 @@ const {
         200: userObject,
       },
     },
+    preValidation:websiteMiddleware,
     handler: getOneUser,
   }
   
@@ -52,6 +53,7 @@ const {
         201: userObject,
       },
     },
+    preValidation:websiteMiddleware,
     handler: postOneUser,
   }
 
@@ -61,6 +63,7 @@ const {
         200: userObject,
       },
     },
+    preValidation:websiteMiddleware,
     handler: updateOneUser,
   }
   
@@ -75,6 +78,7 @@ const {
         },
       },
     },
+    preValidation:adminMiddleware,
     handler: deleteOneUser,
   }
 
@@ -90,7 +94,8 @@ const {
         },
       },
     },
-  handler: deleteAllUsers,
+   preValidation:websiteMiddleware,
+   handler: deleteAllUsers,
   }
 
   module.exports = {

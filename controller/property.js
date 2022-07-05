@@ -114,7 +114,8 @@ const postOneProperty = async(req,reply)=>{
 
 const getOneProperty = async(req,reply)=>{
     try{
-        const id = Number.parseInt(req.body.id)
+        const id = Number.parseInt(req.params.id)
+        console.log('property id is :'+id)
         const targetProperty = await prisma.property.findFirst({
             where:{
                 id
@@ -134,6 +135,77 @@ const getOneProperty = async(req,reply)=>{
             }
         })
         reply.send(targetProperty)
+    }catch(error){
+        reply.send(error)
+    }
+}
+
+const getAllApprovedProperties = async(req,reply)=>{
+    try{
+        let pageNo = 0
+        let toSkip = false
+        if(req.params.pageNumber){
+          pageNo = req.params.pageNumber
+          toSkip = true
+        }
+        await prisma.property.count().then(async(length)=>{
+            let data = await prisma.property.findMany({
+                take:25,
+                skip:toSkip ? (pageNo-1)*25:0,
+                where:{
+                 approve:{
+                    isApproved:true
+                 }
+                },
+                include:{
+                  owner:true,
+                  images:{
+                    select:{
+                        images:{
+                            select:{
+                                id:true,
+                                imageUrl:true
+                            }
+                        }
+                    }
+                },
+                bedOptions:{
+                    select:{
+                        id:true,
+                        kind:true,
+                        numberOFBed:true
+                    }
+                },
+                approve:{
+                    include:{
+                        staff:true
+                    }
+                },
+                amenities:{
+                    select:{
+                        id:true,
+                        name:true,
+                        icon:true
+                    }
+                },
+                facilities:{
+                    select:{
+                        id:true,
+                        name:true,
+                        icon:true
+                    } 
+                },
+                languages:{
+                    select:{
+                        id:true,
+                        language:true
+                    }
+                },
+                bookingOrders:true
+                }
+              })
+              reply.send({data,pageNumber:Math.ceil(length/25)})            
+        })
     }catch(error){
         reply.send(error)
     }
@@ -247,8 +319,6 @@ const searchOneProperty = async(req,reply)=>{
       let AND = {}
 
       let every = {}
-
-      let bookingOrders = {}
 
       let where = {}
   
@@ -527,6 +597,7 @@ module.exports = {
     postOneProperty,
     getOneProperty,
     getAllProperties,
+    getAllApprovedProperties,
     updateOneProperty,
     postOneProperty,
     deleteOneProperty,

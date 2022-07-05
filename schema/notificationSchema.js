@@ -7,8 +7,6 @@ const {
     deleteOneNotification,
     deleteAllNotifications,
   } = require('../controller/notification')
-  const clientMiddleware = require('../controller/auth')
-  const fastify = require('fastify')()
 
   const {
     notificationObject

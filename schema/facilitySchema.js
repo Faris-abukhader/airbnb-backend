@@ -7,7 +7,8 @@ const {
     deleteOneFacility,
     deleteAllFacilities
       } = require('../controller/facility')
-  const clientMiddleware = require('../controller/auth')
+  const adminMiddleware = require('../prevalidation/admin')
+  const websiteMiddleware = require('../prevalidation/website')
   const fastify = require('fastify')()
 
   const {
@@ -20,6 +21,7 @@ const {
           200: facilityObject,
         },
       },
+      preValidation:websiteMiddleware,
       handler: getOneFacility,
     }
     
@@ -32,6 +34,7 @@ const {
           },
         },
       },
+      preValidation:websiteMiddleware,
       handler: getAllFacilities,
     }
     
@@ -49,6 +52,7 @@ const {
           201: facilityObject,
         },
       },
+      preValidation:adminMiddleware,
       handler: createOneFacility,
     }
   
@@ -72,6 +76,7 @@ const {
           },
         },
       },
+      preValidation:adminMiddleware,
       handler: createManyFacilities,
     }
   
@@ -89,6 +94,7 @@ const {
           200: facilityObject,
         },
       },
+      preValidation:adminMiddleware,
       handler: updateOneFacility,
     }
     
@@ -98,6 +104,7 @@ const {
           200: facilityObject
         },
       },
+      preValidation:adminMiddleware,
       handler: deleteOneFacility
     }
   
@@ -112,6 +119,7 @@ const {
           },
         },
       },
+      preValidation:adminMiddleware,
       handler: deleteAllFacilities,
     }
   

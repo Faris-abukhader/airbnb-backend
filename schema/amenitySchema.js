@@ -7,8 +7,8 @@ const {
     deleteOneAmenity,
     deleteAllAmenities
       } = require('../controller/amenity')
-  const clientMiddleware = require('../controller/auth')
-  const fastify = require('fastify')()
+  const adminMiddleware = require('../prevalidation/admin')
+  const websiteMiddleware = require('../prevalidation/website')
   const {
     amenityObject
   } = require('../schema/schemaContainer')
@@ -19,6 +19,7 @@ const {
           200: amenityObject,
         },
       },
+      preValidation:websiteMiddleware,
       handler: getOneAmenity,
     }
     
@@ -31,6 +32,7 @@ const {
           },
         },
       },
+      preValidation:websiteMiddleware,
       handler: getAllAmenities,
     }
     
@@ -48,6 +50,7 @@ const {
           201: amenityObject,
         },
       },
+      preValidation:adminMiddleware,
       handler: createOneAmenity,
     }
   
@@ -71,6 +74,7 @@ const {
           },
         },
       },
+      preValidation:adminMiddleware,
       handler: createManyAmenities,
     }
   
@@ -88,6 +92,7 @@ const {
           200: amenityObject,
         },
       },
+      preValidation:adminMiddleware,
       handler: updateOneAmenity,
     }
     
@@ -97,6 +102,7 @@ const {
           200: amenityObject
         },
       },
+      preValidation:adminMiddleware,
       handler: deleteOneAmenity
     }
   
@@ -111,6 +117,7 @@ const {
           },
         },
       },
+      preValidation:adminMiddleware,
       handler: deleteAllAmenities,
     }
   

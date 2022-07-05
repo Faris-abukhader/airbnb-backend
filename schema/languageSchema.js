@@ -7,8 +7,8 @@ const {
     deleteOneLanguage,
     deleteAllLanguages
   } = require('../controller/language')
-  const clientMiddleware = require('../controller/auth')
-  const fastify = require('fastify')()
+  const adminMiddleware = require('../prevalidation/admin')
+  const websiteMiddleware = require('../prevalidation/website')
 
   const {
     languageObject
@@ -20,6 +20,7 @@ const {
           200: languageObject,
         },
       },
+      preValidation:websiteMiddleware,
       handler: getOneLanguage,
     }
     
@@ -32,6 +33,7 @@ const {
           },
         },
       },
+      preValidation:websiteMiddleware,
       handler: getAllLanguages,
     }
     
@@ -48,6 +50,7 @@ const {
           201: languageObject,
         },
       },
+      preValidation:adminMiddleware,
       handler: createOneLanguage,
     }
   
@@ -70,6 +73,7 @@ const {
           },
         },
       },
+      preValidation:adminMiddleware,
       handler: createManyLanguages,
     }
   
@@ -86,6 +90,7 @@ const {
           200: languageObject,
         },
       },
+      preValidation:adminMiddleware,
       handler: updateOneLanguage,
     }
     
@@ -95,6 +100,7 @@ const {
           200: languageObject
         },
       },
+      preValidation:adminMiddleware,
       handler: deleteOneLanguage
     }
   
@@ -109,6 +115,7 @@ const {
           },
         },
       },
+      preValidation:adminMiddleware,
       handler: deleteAllLanguages,
     }
 

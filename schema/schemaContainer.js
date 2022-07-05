@@ -113,24 +113,6 @@ const articleTopicObject = {
   }
 
 
-
-  /*
-
-    id                  Int         @id @default(autoincrement())
-  propertyId          Int @unique
-  staffId             Int
-  staff               Staff @relation(fields: [staffId],references: [id])
-  property            Property @relation(fields: [propertyId],references: [id])
-  isApproved          Boolean?
-  approvedDate        DateTime?
-  isRefused           Boolean? @default(false)
-  reasonOfRefused     String? @default("")
-  dateOfRefused       DateTime?
-  createdAt           DateTime @default(now())
-  lastUpdate          DateTime @updatedAt
-
-  */
-
   const approvePropertyObject ={
     type:'object',
     properties:{
@@ -198,6 +180,120 @@ const articleTopicObject = {
     },
   }
 
+  const tagObject = {
+    type:'object',
+    properties:{
+        id: { type: 'integer' },
+        name: { type: 'string' },  
+    }
+  }
+
+  const articleObject = {
+    type:'object',
+    properties:{
+      id:{type:'integer'},                    
+      topic:{type:'string'},                           
+      tags:{
+        type:'array',
+        items:tagObject
+      },                            
+      images:imageSetObject,                         
+      content:{type:'string'},                         
+      title:{type:'string'},                           
+      description:{type:'string'},                    
+      publisherId:{type:'integer'},                    
+      publisher:staffObject,                     
+      seenNumber:{type:'integer'},                      
+      createdAt:{type:'string'},                       
+      lastUpdate:{type:'string'},         
+    }
+  }
+
+  const guestInofObject = {
+    type:'object',
+    properties:{
+      id:{type:'integer'},                    
+      bookingId:{type:'integer'},                           
+      firstName:{type:'string'},                           
+      secondName:{type:'string'},                    
+      email:{type:'string'},                       
+      specialRequest:{type:'string'}, 
+      arrivalTime:{type:'string'}, 
+      country:{type:'string'}, 
+      phoneNumber:{type:'string'}, 
+    }
+  }
+
+  const orderReviewObject = {
+    type:'object',
+    properties:{
+      id:{type:'integer'},                    
+      bookingId:{type:'integer'},                           
+      stars:{type:'integer'},                           
+      content:{type:'string'},                    
+      createdAt:{type:'string'},                       
+      lastUpdate:{type:'string'}, 
+    }
+  }
+
+  const paymentCardObject = {
+    type:'object',
+    properties:{
+      id:{type:'integer'},                    
+      bookingId:{type:'integer'},                           
+      cardType:{type:'string'},                           
+      cardNumber:{type:'string'},                    
+      expirationDate:{type:'string'},                    
+    }
+  }
+
+  const transactionObject = {
+    type:'object',
+    properties:{
+      id:{type:'integer'},                    
+      bookingId:{type:'integer'},                           
+      isPaid:{type:'integer'},                           
+      dateOfPaid:{type:'string'},                    
+      isCanceled:{type:'integer'},                    
+      dateOfCanceled:{type:'string'},                       
+      reasonOfCancelling:{type:'string'}, 
+      createdAt:{type:'string'},                       
+      lastUpdate:{type:'string'}, 
+    }
+  }
+
+  const cancelOptionObject = {
+    type:'object',
+    properties:{
+      id:{type:'integer'},                    
+      name:{type:'string'},                           
+      offSetMilli:{type:'integer'},                           
+    }
+  }
+
+
+  const bookingOrderObject = {
+    type:'object',
+    properties:{
+      id:{type:'integer'},                    
+      propertyId:{type:'integer'},                           
+      checkIn:{type:'string'},                           
+      checkOut:{type:'string'},                    
+      isForWork:{type:'integer'},                    
+      createdAt:{type:'string'},                       
+      lastUpdate:{type:'string'}, 
+      isAccepted:{type:'integer'}, 
+      acceptionDate:{type:'string'}, 
+      isRefused:{type:'integer'}, 
+      refusedDate:{type:'string'}, 
+      refusedReason:{type:'string'}, 
+      review:orderReviewObject,
+      guestInfo:guestInofObject,
+      paymentCard:paymentCardObject,
+      transaction:transactionObject, 
+    }
+  }
+
 
 module.exports = {
     amenityObject,
@@ -208,5 +304,14 @@ module.exports = {
     notificationObject,
     propertyObject,
     staffObject,
-    userObject
+    userObject,
+    articleObject,
+    tagObject,
+    imageObject,
+    bookingOrderObject,
+    orderReviewObject,
+    guestInofObject,
+    paymentCardObject,
+    transactionObject,
+    cancelOptionObject
 }

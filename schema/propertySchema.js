@@ -1,6 +1,7 @@
 const {
   getOneProperty,
   getAllProperties,
+  getAllApprovedProperties,
   searchOneProperty,
   updateOneProperty,
   postOneProperty,
@@ -8,14 +9,25 @@ const {
   approveProperty,
   disapproveProperty
 } = require('../controller/property')
-const clientMiddleware = require('../controller/auth')
+const adminMiddleware = require('../prevalidation/admin')
+const clientMiddleware = require('../prevalidation/client')
+const staffMiddleware = require('../prevalidation/staff')
+const websiteMiddleware = require('../prevalidation/website')
 const fastify = require('fastify')()
 
 const {
   propertyObject,
-  staffObject,
-  approvePropertyObject
 } = require('../schema/schemaContainer')
+
+const getOnePropertySchema = {
+  schema: {
+    response: {
+      201:propertyObject
+    },
+  },
+  preValidation:websiteMiddleware,
+  handler: getOneProperty
+}
 
 const postOnePropertySchema = {
   schema: {
@@ -33,6 +45,7 @@ const postOnePropertySchema = {
       ,
     },
   },
+  preValidation:clientMiddleware,
   handler: postOneProperty,
 }
 
@@ -56,6 +69,7 @@ const approvePropertySchema = {
       }  
     },  
   },
+  preValidation:staffMiddleware,
   handler: approveProperty
 }
 
@@ -79,6 +93,7 @@ const disapprovePropertySchema = {
       }  
     },  
   },
+  preValidation:staffMiddleware,
   handler: disapproveProperty
 }
 
@@ -98,7 +113,28 @@ const getAllPropertiesSchema = {
       }
     },
   },
+  preValidation:adminMiddleware,
   handler: getAllProperties
+}
+
+const getAllApprovedPropertiesSchema = {
+  schema: {
+    response: {
+      200:
+      {
+        type: 'object',
+        properties: {
+          data:{
+            type: 'array',
+            item: propertyObject,
+          },          
+          pageNumber: { type: 'integer' },
+        }
+      }
+    },
+  },
+  preValidation:websiteMiddleware,
+  handler: getAllApprovedProperties
 }
 
 const searchPropertySchema = {
@@ -118,6 +154,7 @@ const searchPropertySchema = {
       }
     },
   },
+  preValidation:websiteMiddleware,
   handler: searchOneProperty
 }
 
@@ -137,6 +174,7 @@ const updateOnePropertySchema = {
       200:propertyObject
     },
   },
+  preValidation:clientMiddleware,
   handler: updateOneProperty
 }
 
@@ -156,13 +194,16 @@ const deleteOnePropertySchema = {
       200: propertyObject
     },
   },
+  preValidation:clientMiddleware,
   handler: deleteOneProperty
 }
 
 
 
 module.exports = {
+  getOnePropertySchema,
   getAllPropertiesSchema,
+  getAllApprovedPropertiesSchema,
   searchPropertySchema,
   postOnePropertySchema,
   approvePropertySchema,

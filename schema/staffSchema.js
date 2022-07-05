@@ -5,9 +5,11 @@ const {
     deleteOneStaff,
     deleteAllStaff
   } = require('../controller/staff')
-  const clientMiddleware = require('../controller/auth')
-  const fastify = require('fastify')()
+  const adminMiddleware = require('../prevalidation/admin')
+  const staffMiddleware = require('../prevalidation/staff')
+  const websiteMiddleware = require('../prevalidation/website')
 
+  
   const {
     staffObject
   } = require('../schema/schemaContainer')
@@ -18,6 +20,7 @@ const {
           200: staffObject,
         },
       },
+      preValidation:websiteMiddleware,
       handler: getOneStaff,
     }
     
@@ -30,6 +33,7 @@ const {
           },
         },
       },
+      preValidation:adminMiddleware,
       handler: getAllStaffs,
     }
       
@@ -48,6 +52,7 @@ const {
           200: staffObject,
         },
       },
+      preValidation:staffMiddleware,
       handler: updateOneStaff,
     }
     
@@ -57,6 +62,7 @@ const {
           200: staffObject
         },
       },
+      preValidation:adminMiddleware,
       handler: deleteOneStaff
     }
   
@@ -71,6 +77,7 @@ const {
           },
         },
       },
+      preValidation:adminMiddleware,
       handler: deleteAllStaff,
     }
   

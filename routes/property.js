@@ -1,5 +1,7 @@
 const {
+    getOnePropertySchema,
     getAllPropertiesSchema,
+    getAllApprovedPropertiesSchema,
     searchPropertySchema,
     postOnePropertySchema,
     approvePropertySchema,
@@ -10,6 +12,10 @@ const {
 const propertyRoutes = (fastify, options, done)=> {
 
     fastify.get('/all/:pageNumber?',getAllPropertiesSchema)
+
+    fastify.get('/approved/all/:pageNumber?',getAllApprovedPropertiesSchema)
+
+    fastify.get('/:id',getOnePropertySchema)
 
     fastify.get('/search/:pageNumber?',searchPropertySchema)
     

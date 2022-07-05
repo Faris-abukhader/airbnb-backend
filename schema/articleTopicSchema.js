@@ -7,7 +7,8 @@ const {
   deleteArticleTopic,
   deleteAllArticleTopics
 } = require('../controller/articleTopic')
-const clientMiddleware = require('../controller/auth')
+const adminMiddleware = require('../prevalidation/admin')
+const websiteMiddleware = require('../prevalidation/website')
 const fastify = require('fastify')()
 const {
   articleTopicObject,
@@ -19,6 +20,7 @@ const {
         200: articleTopicObject,
       },
     },
+    preValidation:websiteMiddleware,
     handler: getArticleTopic,
   }
   
@@ -31,6 +33,7 @@ const {
         },
       },
     },
+    preValidation:websiteMiddleware,
     handler: getAllArticleTopics,
   }
   
@@ -47,6 +50,7 @@ const {
         201: articleTopicObject,
       },
     },
+    preValidation:adminMiddleware,
     handler: postArticleTopic,
   }
 
@@ -69,6 +73,7 @@ const {
         },
       },
     },
+    preValidation:adminMiddleware,
     handler: postManyArticleTopics,
   }
 
@@ -86,6 +91,7 @@ const {
         200: articleTopicObject,
       },
     },
+    preValidation:adminMiddleware,
     handler: updateOneArticle,
   }
   
@@ -95,6 +101,7 @@ const {
         200: articleTopicObject
       },
     },
+    preValidation:adminMiddleware,
     handler: deleteArticleTopic
   }
 
@@ -109,6 +116,7 @@ const {
         },
       },
     },
+    preValidation:adminMiddleware,
     handler: deleteAllArticleTopics,
   }
 

@@ -5,7 +5,8 @@ const {
     deleteOneClient,
     deleteAllClient
   } = require('../controller/client')
-  const clientMiddleware = require('../controller/auth')
+  const adminMiddleware = require('../prevalidation/admin')
+  const clientMiddleware = require('../prevalidation/client')
   const fastify = require('fastify')()
 
   const {
@@ -19,6 +20,7 @@ const {
           200: clientObject,
         },
       },
+      preValidation:clientMiddleware,
       handler: getOneClient,
     }
     
@@ -31,6 +33,7 @@ const {
           },
         },
       },
+      preValidation:adminMiddleware,
       handler: getAllClients,
     }
       
@@ -49,6 +52,7 @@ const {
           200: clientObject,
         },
       },
+      preValidation:clientMiddleware,
       handler: updateOneClient,
     }
     
@@ -58,6 +62,7 @@ const {
           200: clientObject
         },
       },
+      preValidation:adminMiddleware,
       handler: deleteOneClient
     }
   
@@ -72,6 +77,7 @@ const {
           },
         },
       },
+      preValidation:adminMiddleware,
       handler: deleteAllClient,
     }
   

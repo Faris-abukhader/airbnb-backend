@@ -65,7 +65,7 @@ fastify.register(require('./routes/propertyType'),{prefix:'/propertyType'})
 // Run the server!
 const start = async () => {
   try {
-    await fastify.listen(process.env.PORT, '0.0.0.0')
+    await fastify.listen({ port: PORT ,host:'0.0.0.0'})
     fastify.swagger()
   } catch (err) {
     fastify.log.error(err)

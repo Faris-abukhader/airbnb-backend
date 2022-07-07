@@ -1,6 +1,7 @@
 const {
     getOneStaffSchema,
     getAllStaffsSchema,
+    postOneStaffSchema,
     updateOneStaffSchema,
     deleteOneStaffSchema,
     deleteAllStaffsSchema
@@ -12,6 +13,8 @@ const staffRoutes = (fastify, options, done)=> {
   
     // Get single items
     fastify.get('/:id', getOneStaffSchema)
+
+    fastify.post('/',postOneStaffSchema)
   
     // Delete item
     fastify.delete('/:id', deleteOneStaffSchema)

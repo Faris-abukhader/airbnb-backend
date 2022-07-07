@@ -10,7 +10,7 @@ const adminMiddleware = require('../prevalidation/admin')
 const websiteMiddleware = require('../prevalidation/website')
 
 const {
-  userObject
+  userObject, clientObject
 } = require('../schema/schemaContainer')
 
 
@@ -50,7 +50,18 @@ const {
         },
       },
       response: {
-        201: userObject,
+        201: {
+          type: 'object',
+          properties: {
+            id:  {type:'integer'},
+            email: { type: 'string' },
+            firstName: { type: 'string' },
+            secondName: { type: 'string' },
+            image: { type: 'string' },
+            createdAt: { type: 'string' },
+            lastUpdate: { type: 'string' },
+          },  
+        },
       },
     },
     preValidation:websiteMiddleware,

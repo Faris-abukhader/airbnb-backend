@@ -34,7 +34,6 @@ const createOneCanelationOption = async(req,reply)=>{
                 offSetMilli
             }
         })
-        console.log(newCanelationOption)
         reply.send(newCanelationOption)
     }catch(err){
         reply.send(err)

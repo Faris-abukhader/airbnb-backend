@@ -23,13 +23,9 @@ const staffMiddleware = async(req,res,next)=>{
                 }
             }) 
 
-            console.log('from middle ware ')
-            console.log(targetClient)
-            console.log(decoded.email)
-
             if(!targetClient) res.code(401).send("Unothorize request") 
 
-            next() 
+
         }catch(err){
            res.send(err)
         }

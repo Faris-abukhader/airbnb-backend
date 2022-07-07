@@ -2,7 +2,6 @@ const {
     getOneNotificationSchema,
     getAllNotificationsSchema,
     postOneNotificationSchema,
-    postManyNotificationSchema,
     updateNotificationSchema,
     deleteNotificationSchema,
     deleteAllNotificationSchema,
@@ -14,9 +13,6 @@ const notificationRoutes = (fastify, options, done)=> {
   
     // Get single items
     fastify.get('/:id', getOneNotificationSchema)
-
-    // Add manay items
-    fastify.post('/many', postManyNotificationSchema)
   
     // Add item
     fastify.post('/', postOneNotificationSchema)

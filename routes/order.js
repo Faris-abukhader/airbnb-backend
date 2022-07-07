@@ -7,7 +7,10 @@ const {
     updateOneOrderSchema,
     deleteOneOrderSchema,
     deleteAllOrdersSchema,
-    acceptOneOrderSchema
+    acceptOneOrderSchema,
+    payOneOrderSchema,
+    refuseOneOrderSchema,
+    cancelOnOrder,
 } = require('../schema/orderSchema')  
 const orderRoutes = (fastify, options, done)=> {
 
@@ -23,7 +26,13 @@ const orderRoutes = (fastify, options, done)=> {
 
     fastify.put('/accept/:id',acceptOneOrderSchema)
 
+    fastify.put('/refuse/:id',refuseOneOrderSchema)
+
     fastify.put('/:id',updateOneOrderSchema)
+
+    fastify.put('/pay/:id',payOneOrderSchema)
+
+    fastify.put('/cancel/:propertyId/:bookingId',cancelOnOrder)
 
     fastify.delete('/:id',deleteOneOrderSchema)
 

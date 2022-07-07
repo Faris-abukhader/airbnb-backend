@@ -1,6 +1,7 @@
 const {    
     getOneStaff,
     getAllStaffs,
+    postOneStaff,
     updateOneStaff,
     deleteOneStaff,
     deleteAllStaff
@@ -35,6 +36,36 @@ const {
       },
       preValidation:adminMiddleware,
       handler: getAllStaffs,
+    }
+
+    const postOneStaffSchema = {
+      schema: {
+        body:{
+          type:'object',
+          // required:['email','firstName','secondName','image'],
+          properties:{
+            email:{type:'string'},
+            firstName:{type:'string'},
+            secondName:{type:'string'},
+            image:{type:'string'}
+          }
+        },
+        response: {
+          200: {
+            type:'object',
+            required:['firstName','secondName','image'],
+            properties:{
+              id:{type:'integer'},
+              email:{type:'string'},
+              firstName:{type:'string'},
+              secondName:{type:'string'},
+              image:{type:'string'}
+            }  
+          },
+        },
+      },
+      preValidation:adminMiddleware,
+      handler: postOneStaff,
     }
       
     const updateOneStaffSchema = {
@@ -84,6 +115,7 @@ const {
     module.exports = {
         getOneStaffSchema,
         getAllStaffsSchema,
+        postOneStaffSchema,
         updateOneStaffSchema,
         deleteOneStaffSchema,
         deleteAllStaffsSchema

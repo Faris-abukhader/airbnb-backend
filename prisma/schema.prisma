@@ -14,13 +14,16 @@ model User {
   role          String               @default("client")
   client        Client?
   staff         Staff?
+  notifications Notification[]
+  createdAt               DateTime    @default(now())
+  lastUpdate              DateTime    @updatedAt @default(now())
   @@index([id], map: "user_index")
 }
 
 model Property{
   id            Int                 @id @default(autoincrement())
   ownerId       Int
-  owner         Client @relation(fields: [ownerId],references: [id])
+  owner         Client              @relation(fields: [ownerId],references: [id])
   name          String
   country       String
   city          String               
@@ -47,6 +50,8 @@ model Property{
   numberOfBathroom        Int
   numberOfLivingroom      Int
   type                    String
+  createdAt               DateTime    @default(now())
+  lastUpdate              DateTime    @updatedAt
   languages               languageSpoken[]
   bedOptions              BedOption[]
   images                  ImageSet?
@@ -55,6 +60,12 @@ model Property{
   facilities              PropertyFacility[]
   bookingOrders           BookingOrder[]
   @@index([id])
+}
+
+
+model PropertyType {
+  id                  Int         @id @default(autoincrement())
+  name                String
 }
 
 model BedOption {
@@ -154,7 +165,6 @@ model Staff{
     createdAt               DateTime @default(now())
     lastUpdate              DateTime @updatedAt
     propertyApprove         PropertyApproved[]
-    notification            Notification[]
     articles                Article[]
     @@index([id])
 }
@@ -169,7 +179,7 @@ model Client{
     createdAt               DateTime @default(now())
     lastUpdate              DateTime @updatedAt
     properties              Property[]
-    notifications           Notification[]
+    rentOrders              BookingOrder[]
     @@index([id])
 }
 
@@ -178,6 +188,8 @@ model BookingOrder{
   id                      Int                      @id @default(autoincrement())
   propertyId              Int
   property                Property @relation(fields: [propertyId],references: [id],onDelete: Cascade)
+  guestId                 Int
+  guest                   Client @relation(fields: [guestId],references: [id])
   checkIn                 DateTime
   checkOut                DateTime
   isForWork               Boolean
@@ -198,13 +210,15 @@ model BookingOrder{
 model cancelationPolicy {
   id                     Int                      @id @default(autoincrement())
   propertyId             Int                      @unique
-  property               Property @relation(fields: [propertyId],references: [id])
+  property               Property @relation(fields: [propertyId],references: [id],onDelete: Cascade)
+  name                   String  @unique
+  offSetMilli            Decimal @db.Decimal(20,0)
 }
 
 model cancelationOption {
   id                     Int                      @id @default(autoincrement())
-  name                   String
-  offSetMilli            Int
+  name                   String  @unique
+  offSetMilli            Decimal @db.Decimal(20,0)
 }
 
 model BookingReview{
@@ -250,9 +264,9 @@ model Transaction{
   bookingOrder           BookingOrder @relation(fields: [bookingId],references: [id])
   isPaid                 Boolean
   dateOfPaid             DateTime
-  isCanceled             Boolean
-  dateOfCanceled         DateTime
-  reasonOfCancelling     String
+  isCanceled             Boolean?
+  dateOfCanceled         DateTime?
+  reasonOfCancelling     String?
   createdAt              DateTime @default(now())
   lastUpdate             DateTime @updatedAt
   @@index([id])
@@ -261,14 +275,10 @@ model Transaction{
 
 model Notification {
   id                     Int                      @id @default(autoincrement())
-  senderId               Int
-  staff                  Staff ? @relation(fields: [senderId],references: [id])
   recieverId             Int
-  client                 Client @relation(fields: [recieverId],references: [id])
+  user                   User @relation(fields: [recieverId],references: [id])
   title                  String
   content                String
-  isSeen                 Boolean @default(false)
-  seenAt                 DateTime? 
   createdAt              DateTime @default(now())
   @@index([id])
 }

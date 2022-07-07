@@ -1,5 +1,6 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
+const {sendNewNotification} = require('../configuration/notifcationCenter')
 
   
 const getAllUsers = async(req, reply) => {
@@ -33,23 +34,57 @@ const getAllUsers = async(req, reply) => {
   const postOneUser = async(req, reply) => {
     try{
       const { email,firstName,secondName,image} = req.body
-      await prisma.user.create({
-          data:{
-              email,
-              role:'client'
-          }
+      await prisma.user.upsert({
+        where:{
+          email
+        },
+        create:{
+          email,
+          role:'client'
+        },
+        update:{}
       }).then(async(newUser)=>{
-        const newClient = await prisma.client.create({
-          data:{
+
+        // for sending welcoming notification
+        let current = new Date()
+
+        // have to check if this post not update request
+        // if create then send notifcation 
+        // if post don't send any notification
+        if(current.getTime()-newUser.createdAt.getTime()<20){
+          sendNewNotification(newUser.id,`hello ${secondName} ${firstName} `,'welcome to join our big family Airbnb')
+        }
+
+        const newClient = await prisma.client.upsert({
+          where:{
+           id:newUser.id
+          },
+          create:{
             id:newUser.id,
-            firstName,
-            secondName,
+            firstName:firstName ??'',
+            secondName:secondName??'',
             image,
+          },
+          update:{
+            firstName:firstName ??'',
+            secondName:secondName??'',
+            image,
+          },
+          include:{
+            user:{
+              select:{
+                email:true,
+              }
+            }
           }
         })
-        reply.code(201).send(newUser)
-      })  
+        let result = newClient
+        result.email = newClient.user.email
+        delete result.user
+        reply.code(201).send(result)
+      })
     }catch(error){
+      console.log(error)
       reply.send(error)
     }
   }

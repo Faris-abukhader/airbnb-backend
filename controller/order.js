@@ -1,6 +1,6 @@
 const {PrismaClient} = require('@prisma/client')
+const { sendNewNotification } = require('../configuration/notifcationCenter')
 const prisma = new PrismaClient()
-
 const getOneOrder = async(req,reply)=>{
     try{
         const id = Number.parseInt(req.params.id)
@@ -24,7 +24,6 @@ const getOneOrder = async(req,reply)=>{
 const getOnePropertyOrders = async(req,reply)=>{
     try{
        const propertyId = Number.parseInt(req.params.propertyId)
-       console.log('property id is : '+propertyId)
 
        let pageNo = 0
        let toSkip = false
@@ -49,27 +48,6 @@ const getOnePropertyOrders = async(req,reply)=>{
         })
         reply.send({data,pageNumber:Math.ceil(length/25)})                
     })
-
-    //    await prisma.bookingOrder.count({
-    //        where:{
-    //            propertyId
-    //        }
-    //    }).then(async(length)=>{
-    //        const data = await prisma.bookingOrder.findMany({
-    //            where:{
-    //                propertyId
-    //            },
-    //            take:25,
-    //            skip:toSkip ? (pageNo-1)*25:0,
-    //            include:{
-    //             review:true,
-    //             guestInfo:true,
-    //             paymentCard:true,
-    //             transaction:true,   
-    //            }
-    //        })
-    //        reply.send({data,pageNumber:Math.ceil(length/25)})                
-    //     })
     }catch(error){
         reply.send(error)
     }
@@ -146,7 +124,7 @@ const getAllOrders = async(req,reply)=>{
 
 const postOneOrder = async(req,reply)=>{
     try{
-        const {propertyId,checkIn,checkOut,isForWork,firstName,secondName,
+        const {propertyId,guestId,checkIn,checkOut,isForWork,firstName,secondName,
                email,specialRequest,arrivalTime,country,phoneNumber,
             cardHolderName,cardType,cardNumber,expirationDate} = req.body             
         const newOrder = await prisma.bookingOrder.create({
@@ -154,6 +132,11 @@ const postOneOrder = async(req,reply)=>{
                 property:{
                     connect:{
                         id:propertyId
+                    }
+                },
+                guest:{
+                    connect:{
+                        id:guestId,
                     }
                 },
                 checkIn,
@@ -180,13 +163,26 @@ const postOneOrder = async(req,reply)=>{
                 }
             },
             include:{
+                property:{
+                    select:{
+                        ownerId:true,
+                        name:true,
+                    }
+                },
                 review:true,
                 guestInfo:true,
                 paymentCard:true,
                 transaction:true,  
             }
         })
-        reply.send(newOrder)
+
+        let result = newOrder
+        let ownerId = result.property.ownerId
+        let propertyName = result.property.name
+        delete result.property
+        sendNewNotification(ownerId,`You property ${propertyName} received one booking request.`,`Your property ${propertyName} has received one booking request make sure to check the request and accept it.` )
+        
+        reply.send(result)
     }catch(error){
      console.log(error)
      reply.send(error)
@@ -196,7 +192,6 @@ const postOneOrder = async(req,reply)=>{
 const updateOneOrder = async(req,reply)=>{
     try{
         const id = Number.parseInt(req.params.id)
-        console.log('the order id is :'+id)
         const {checkIn,checkOut,isForWork,firstName,secondName,
             email,specialRequest,arrivalTime,country,phoneNumber,
          cardHolderName,cardType,cardNumber,expirationDate} = req.body             
@@ -235,7 +230,6 @@ const updateOneOrder = async(req,reply)=>{
              transaction:true,  
          }
      })
-     console.log(targetOrder)
      reply.send(targetOrder)
     }catch(error){
         console.log(error)
@@ -276,9 +270,25 @@ const acceptOneOrder = async(req,reply)=>{
             data:{
                 isAccepted:true,
                 acceptionDate:new Date()
+            },
+            include:{
+                property:{
+                    select:{
+                        ownerId:true,
+                        name:true,
+                    }
+                },
             }
         })
-        reply.send(updatedOrder)
+
+        let result = updatedOrder
+        let guestId = updatedOrder.guestId
+        let propertyName = result.property.name
+        delete result.property
+
+        sendNewNotification(guestId,`Your booking request for ${propertyName} has been accepted by the owner.`,`Your booking request for ${propertyName} has accepted by the owner , don't forget to pay the bill.` )
+
+        reply.send(result)
     }catch(error){
       reply.send(error)
     }
@@ -296,9 +306,25 @@ const refuseOneOrder = async(req,reply)=>{
                 isRefused:true,
                 refusedDate:new Date(),
                 refusedReason,
+            },
+            include:{
+                property:{
+                    select:{
+                        ownerId:true,
+                        name:true,
+                    }
+                },
             }
         })
-        reply.send(updatedOrder)
+
+        let result = updatedOrder
+        let guestId = updatedOrder.guestId
+        let propertyName = result.property.name
+        delete result.property
+
+        sendNewNotification(guestId,`Your booking request for ${propertyName} has been refused by the owner.`,`We sadly inform you that Your booking request for ${propertyName} has refused by the owner.` )
+
+        reply.send(result)
     }catch(error){
       reply.send(error)
     }
@@ -307,52 +333,101 @@ const refuseOneOrder = async(req,reply)=>{
 const payOneOrder = async(req,reply)=>{
     try{
         const id = Number.parseInt(req.params.id)
-        const updatedOrder = await prisma.bookingOrder.update({
-            where:{
-                id
-            },
+        const newTransaction = await prisma.transaction.create({
             data:{
-                transaction:{
-                    create:{
-                        isPaid:true,
-                        dateOfPaid:new Date(),
+                bookingOrder:{
+                    connect:{
+                        id
+                    }
+                },
+                isPaid:true,
+                dateOfPaid:new Date()    
+            },
+            include:{
+                bookingOrder:{
+                    select:{
+                        guestId:true,
+                        property:{
+                            select:{
+                                ownerId:true,
+                                name:true,
+                            }
+                        },        
                     }
                 }
             }
         })
-        reply.send(updatedOrder)
+
+        let result = newTransaction
+        let guestId = result.bookingOrder.guestId
+        let propertyName = result.bookingOrder.property.name
+        let ownerId = result.bookingOrder.property.ownerId
+        delete result.bookingOrder
+
+        sendNewNotification(guestId,`You successfully pay your booking request for ${propertyName}.`,`You successfully pay your booking request for ${propertyName} , hope you enjoy your journey.`)
+        sendNewNotification(ownerId,`Your property ${propertyName}'s request had paid successfully.`,`Your property ${propertyName}'s request had paid successfully.` )
+
+        reply.send(result)
+
+        reply.send(newTransaction)
     }catch(error){
+        console.log(error)
         reply.send(error)
     }
 }
 
+// here now we have cancelation policy relation from it we can get the offSet and add it to where condition
 const cancelOneOrder = async(req,reply)=>{
     try{
-        const id = Number.parseInt(req.params.id)
+        const propertyId = Number.parseInt(req.params.propertyId)
+        const bookingId = Number.parseInt(req.params.bookingId)
         const {reasonOfCancelling} = req.body
 
-        var dateOffset = (24*60*60*1000) * 1; //one day
-        var myDate = new Date();
-        myDate.setTime(myDate.getTime() - dateOffset);
-        const updatedOrder = await prisma.bookingOrder.upsert({
+        await prisma.property.findFirst({
             where:{
-                checkIn:{
-                    lt:myDate
-                }
+                id:propertyId
             },
-            update:{
-                transaction:{
-                    update:{
-                        isCanceled:true,
-                        dateOfCanceled:new Date()
+            select:{
+                bookingOrders:{
+                    where:{
+                        id:bookingId
+                    },
+                    select:{
+                        transaction:true,
+                        checkIn:true
+                    }
+                },
+                cancellationPolicy:{
+                    select:{
+                        offSetMilli:true
                     }
                 }
-            },
-            include:{
-
             }
+        }).then(async(data)=>{
+            const checkIn = data.bookingOrders[0].checkIn
+            const offSet = Number.parseInt(data.cancellationPolicy.offSetMilli)
+            var myDate = new Date(Date.now() + offSet)
+
+            if(myDate<checkIn){
+                const targetOrder = await prisma.bookingOrder.update({
+                    where:{
+                        id:bookingId
+                    },
+                    data:{
+                        transaction:{
+                            update:{
+                                isCanceled:true,             
+                                dateOfCanceled:new Date(),        
+                                reasonOfCancelling:reasonOfCancelling 
+                            }
+                        }
+                    }
+                })
+                reply.send(targetOrder)
+            }
+
+            reply.code(500).send('no')
         })
-        reply.send(updatedOrder)
     }catch(error){
         reply.send(error)
     }

@@ -1,6 +1,20 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
 
+const sendOneNotification = async({recieverId,title,content})=>{
+    await prisma.notification.create({
+        data:{
+            title,
+            content,
+            user:{
+                connect:{
+                    id:recieverId
+                }
+            },
+        }
+    })
+}
+
 const createOneNotification = async(req,reply)=>{
     try{
         const {senderId,recieverId,title,content} = req.body
@@ -20,22 +34,41 @@ const createOneNotification = async(req,reply)=>{
     }catch(error){
         reply.send(error)
     }
-
 }
 
-const createManyNotifications = async(req,reply)=>{
+const getOneUserTopNotifications = async(req,reply)=>{
     try{
-        const {data} = req.body
-        const notifications = await prisma.notification.createMany({
-            data:{
-                data
+        const id = Number.parseInt(req.params.id)
+        const notifications = await prisma.notification.findMany({
+            where:{
+                recieverId:id
+            },
+            select:5,
+            orderBy:{
+                createdAt:'desc'
             }
         })
         reply.send(notifications)
     }catch(error){
         reply.send(error)
     }
+}
 
+const getOnClientNotifications = async(req,reply)=>{
+    try{
+        const id = Number.parseInt(req.params.id)
+        const notifications = await prisma.notification.findMany({
+            where:{
+                recieverId:id
+            },
+            orderBy:{
+                createdAt:'desc'
+            }
+        })
+        reply.send(notifications)
+    }catch(error){
+        reply.send(error)
+    }
 }
 
 const getNotificationById = async(req,reply)=>{
@@ -99,10 +132,12 @@ const deleteAllNotifications = async(req,reply)=>{
 
 }
 module.exports = {
+    sendOneNotification,
     createOneNotification,
-    createManyNotifications,
     getNotificationById,
     getAllNotifications,
+    getOnClientNotifications,
+    getOneUserTopNotifications,
     updateOnNotification,
     deleteOneNotification,
     deleteAllNotifications,

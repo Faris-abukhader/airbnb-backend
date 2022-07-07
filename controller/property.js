@@ -1,4 +1,5 @@
 const {PrismaClient} = require('@prisma/client')
+const { sendNewNotification } = require('../configuration/notifcationCenter')
 const prisma  = new PrismaClient()
 
 const postOneProperty = async(req,reply)=>{
@@ -11,23 +12,6 @@ const postOneProperty = async(req,reply)=>{
             images,languages,bedOptions,amenities,facilities
         } = req.body
 
-        let tempList = images.split(',')
-        imageList = tempList.map((item)=>{
-            let temp={
-              imageUrl:item
-            }
-            console.log(item)
-            return temp
-        })
-
-        let languageTempList = languages.split(',')
-        languageList = languageTempList.map((item)=>{
-            let temp = {
-                language:item
-            }
-            return temp
-        })
-
         // creating the property object
         const newProperty = await prisma.property.create({
             data:{
@@ -39,7 +23,12 @@ const postOneProperty = async(req,reply)=>{
                 zipCode,
                 numberOFSofa,
                 space,
-                cancellationPolicy,
+                cancellationPolicy:{
+                    create:{
+                        name:cancellationPolicy.name,
+                        offSetMilli:cancellationPolicy.offSetMilli
+                    }
+                },
                 guestArrive,
                 guestDepart,
                 canSmoke,
@@ -69,14 +58,14 @@ const postOneProperty = async(req,reply)=>{
                     create:{
                         images:{
                             createMany:{
-                                data:imageList
+                                data:images
                             }
                         }
                     }
                 },
                 languages:{
                     createMany:{
-                        data:languageList
+                        data:languages
                     }
                 },
                 amenities:{
@@ -115,7 +104,6 @@ const postOneProperty = async(req,reply)=>{
 const getOneProperty = async(req,reply)=>{
     try{
         const id = Number.parseInt(req.params.id)
-        console.log('property id is :'+id)
         const targetProperty = await prisma.property.findFirst({
             where:{
                 id
@@ -131,7 +119,15 @@ const getOneProperty = async(req,reply)=>{
                 amenities:true,
                 facilities:true,
                 languages:true,
-                bookingOrders:true
+                bookingOrders:{
+                    include:{
+                        review:true,
+                        guestInfo:true,
+                        paymentCard:true,
+                        transaction:true,  
+                        paymentCard:true,
+                    }
+                }
             }
         })
         reply.send(targetProperty)
@@ -148,7 +144,13 @@ const getAllApprovedProperties = async(req,reply)=>{
           pageNo = req.params.pageNumber
           toSkip = true
         }
-        await prisma.property.count().then(async(length)=>{
+        await prisma.property.count({
+            where:{
+                approve:{
+                    isApproved:true
+                }
+            }
+        }).then(async(length)=>{
             let data = await prisma.property.findMany({
                 take:25,
                 skip:toSkip ? (pageNo-1)*25:0,
@@ -211,7 +213,7 @@ const getAllApprovedProperties = async(req,reply)=>{
     }
 }
 
-const getAllProperties = async(req,reply)=>{
+const getAllProperties = async(req,reply)=>{  
     try{
         let pageNo = 0
         let toSkip = false
@@ -371,7 +373,13 @@ const searchOneProperty = async(req,reply)=>{
        
       }
       
-      await prisma.property.count().then(async(length)=>{
+      await prisma.property.count({
+          where:{
+              approve:{
+                  isApproved:true
+              }
+          }
+      }).then(async(length)=>{
         let data = await prisma.property.findMany({
           where,
           take:25,
@@ -546,9 +554,30 @@ const approveProperty = async(req,reply)=>{
                         id:staffId
                     }
                 }
+            },
+            include:{
+              property:{
+                  select:{
+                     name:true,
+                     owner:{
+                         select:{
+                             id:true
+                         }
+                     }
+                  }
+              }
             }
         })
-       reply.send(targetProperty)
+
+        // getting the ownerId and property name from result and then delete it (just for creating notification)
+        let result = targetProperty
+        let ownerId = result.property.owner.id
+        let propertyName = result.property.name
+        delete result.property
+//        sendNewNotification(ownerId,`Your property ${propertyName} has been accepted`,`Your property ${propertyName} has received new booking request , make sure to check the request and accept it if now problem.`)
+
+        sendNewNotification(ownerId,`Your property ${propertyName} has been accepted`,`We happy you to inform you that Your property : ${propertyName} has benn accepted , your property now will be available to public.`)
+       reply.send(result)
     }catch(error){
         console.log(error)
         reply.send(error)
@@ -585,9 +614,30 @@ const disapproveProperty = async(req,reply)=>{
                         id:staffId
                     }
                 }
-            }
+            },
+            include:{
+                property:{
+                    select:{
+                       name:true,
+                       owner:{
+                           select:{
+                               id:true
+                           }
+                       }
+                    }
+                }
+              }
         })
-       reply.send(targetProperty)
+
+                // getting the ownerId and property name from result and then delete it (just for creating notification)
+                let result = targetProperty
+                let ownerId = result.property.owner.id
+                let propertyName = result.property.name
+                delete result.property
+        
+                sendNewNotification(ownerId,`Your property ${propertyName} has been refused`,`We sadly inform you that Your property : ${propertyName} has benn refused , make sure to check refused reason before you submit your request again.`)
+        
+       reply.send(result)
     }catch(error){
         reply.send(error)
     }

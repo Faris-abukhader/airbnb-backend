@@ -26,7 +26,7 @@ const {
     const getOneOrderSchema = {
       schema: {
         response: {
-          200: bookingOrderObject,
+          201: bookingOrderObject,
         },
       },
       preValidation:clientMiddleware,
@@ -94,11 +94,12 @@ const {
       schema: {
         body: {
           type: 'object',
-          required: ['propertyId','checkIn','checkOut','isForWork','firstName','secondName',
+          required: ['propertyId','guestId','checkIn','checkOut','isForWork','firstName','secondName',
                      'email','arrivalTime','country','phoneNumber',
                      'cardHolderName','cardType','cardNumber','expirationDate'],
             properties: {
-            propertyId:{type:'integer'},                           
+            propertyId:{type:'integer'},
+            guestId:{type:'integer'},                                                      
             checkIn:{type:'string'},                           
             checkOut:{type:'string'},                    
             isForWork:{type:'integer'},                    
@@ -171,6 +172,16 @@ const {
       preValidation:adminMiddleware,
       handler: deleteAllOrders,
     }
+
+    const payOneOrderSchema = {
+      schema:{
+        response:{
+          200:transactionObject
+        }
+      },
+      preValidation:clientMiddleware,
+      handler:payOneOrder,
+    }
     /**
      *     acceptOneOrder,
     refuseOneOrder,
@@ -204,6 +215,40 @@ const {
       preValidation:clientMiddleware,
       handler:acceptOneOrder,
     }
+
+    const refuseOneOrderSchema = {
+      schema:{
+        response:{
+          200:{
+            type:'object',
+            properties:{
+              id:{type:'integer'},                    
+              propertyId:{type:'integer'},                           
+              checkIn:{type:'string'},                           
+              checkOut:{type:'string'},                    
+              isForWork:{type:'integer'},                    
+              createdAt:{type:'string'},                       
+              lastUpdate:{type:'string'},
+              isAccepted:{type:'integer'}, 
+              acceptionDate:{type:'string'}, 
+              isRefused:{type:'integer'}, 
+              refusedDate:{type:'string'}, 
+              refusedReason:{type:'string'},                  
+            }
+          }
+        }
+      },
+      preValidation:clientMiddleware,
+      handler:refuseOneOrder,
+    }
+
+    const cancelOnOrder = {
+      schema:{
+        response:200
+      },
+      preValidation:clientMiddleware,
+      handler:cancelOneOrder,
+    }
   
     module.exports = {
         getOneOrderSchema,
@@ -214,5 +259,8 @@ const {
         updateOneOrderSchema,
         deleteOneOrderSchema,
         deleteAllOrdersSchema,
-        acceptOneOrderSchema
+        acceptOneOrderSchema,
+        payOneOrderSchema,
+        refuseOneOrderSchema,
+        cancelOnOrder
     }

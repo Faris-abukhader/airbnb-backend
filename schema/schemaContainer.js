@@ -188,6 +188,16 @@ const articleTopicObject = {
     }
   }
 
+
+  const propertyTypeObject = {
+    type:'object',
+    properties:{
+        id: { type: 'integer' },
+        name: { type: 'string' },  
+    }
+  }
+
+
   const articleObject = {
     type:'object',
     properties:{
@@ -276,7 +286,8 @@ const articleTopicObject = {
     type:'object',
     properties:{
       id:{type:'integer'},                    
-      propertyId:{type:'integer'},                           
+      propertyId:{type:'integer'}, 
+      guestId:{type:'integer'},                          
       checkIn:{type:'string'},                           
       checkOut:{type:'string'},                    
       isForWork:{type:'integer'},                    
@@ -313,5 +324,6 @@ module.exports = {
     guestInofObject,
     paymentCardObject,
     transactionObject,
-    cancelOptionObject
+    cancelOptionObject,
+    propertyTypeObject
 }

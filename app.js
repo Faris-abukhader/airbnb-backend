@@ -1,9 +1,5 @@
-const fastify = require('fastify')({ logger: false })
+const fastify = require('fastify')({ logger: true })
 const PORT = process.env.PORT || 4500
-const {sign,verify, decode} = require('jsonwebtoken')
-const {PrismaClient} = require('@prisma/client')
-const prisma  = new PrismaClient()
-
 
 // documentation ui Swagger library register
 fastify.register(require('@fastify/swagger'), {
@@ -63,6 +59,7 @@ fastify.register(require('./routes/facility'),{prefix:'/facility'})
 fastify.register(require('./routes/amenity'),{prefix:'/amenity'})
 fastify.register(require('./routes/article'),{prefix:'/article'})
 fastify.register(require('./routes/cancelationOption'),{prefix:'/cancelationOption'})
+fastify.register(require('./routes/propertyType'),{prefix:'/propertyType'})
 
 // Run the server!
 const start = async () => {
@@ -77,17 +74,8 @@ const start = async () => {
 start()
 
 
-fastify.get('/token/:email',async(req,res)=>{
-    const {email} = req.params
-    const token = sign({email:email},process.env.JWT_SECRET)
-    res.send({token})
-})
-
-
-fastify.post('/test1/:option?',(req,res)=>{
-   if(req.params.option){
-     res.send(req.params.option)
-   }else{
-     res.send('no options')
-   }
-})
+// fastify.get('/token/:email',async(req,res)=>{
+//     const {email} = req.params
+//     const token = sign({email:email},process.env.JWT_SECRET)
+//     res.send({token})
+// })

@@ -25,7 +25,6 @@ const clientMiddleware = async(req,res,next)=>{
 
             if(!targetClient) res.code(401).send("Unothorize request") 
 
-            next() 
         }catch(err){
            res.send(err)
         }

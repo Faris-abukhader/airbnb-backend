@@ -15,6 +15,53 @@ const getOneStaff = async(req,reply)=>{
     }
 }
 
+const postOneStaff = async(req,reply)=>{
+    try{
+        const { email,firstName,secondName,image} = req.body
+        await prisma.user.upsert({
+          where:{
+            email:email??''
+          },
+          create:{
+            email,
+            role:'staff'
+          },
+          update:{}
+        }).then(async(newUser)=>{
+          const newClient = await prisma.staff.upsert({
+            where:{
+             id:newUser.id
+            },
+            create:{
+              id:newUser.id,
+              firstName:firstName ??'',
+              secondName:secondName??'',
+              image,
+            },
+            update:{
+              firstName:firstName ??'',
+              secondName:secondName??'',
+              image,
+            },
+            include:{
+              user:{
+                select:{
+                  email:true,
+                }
+              }
+            }
+          })
+          let result = newClient
+          result.email = newClient.user.email
+          delete result.user
+          reply.code(201).send(result)
+        })
+      }catch(error){
+        console.log(error)
+        reply.send(error)
+      }  
+}
+
 const getAllStaffs = async(req,reply)=>{
     try{
         const staffs = await prisma.staff.findMany({})
@@ -70,6 +117,7 @@ const deleteAllStaff = async(req,reply)=>{
 module.exports = {
     getOneStaff,
     getAllStaffs,
+    postOneStaff,
     updateOneStaff,
     deleteOneStaff,
     deleteAllStaff

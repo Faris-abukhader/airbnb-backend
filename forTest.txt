@@ -1,0 +1,120 @@
+// for posting one client
+{
+        "email": "client1@yahoo.com",
+        "firstName": "fares",
+        "secondName": "raed",
+        "image": "fajknerfaer.png",
+        "createdAt": "2022-07-06T07:17:00.528Z",
+        "lastUpdate": "2022-07-06T07:17:00.530Z"
+}
+
+// for posting one property
+{
+    "email":"fares@yahoo.com",
+    "firstName":"fares",
+    "secondName":"raed",
+    "image":"fajknerfaer.png",
+    "name":"my first department",
+    "ownerId":2,
+  "country":"jordan",       
+  "city":"irbid",                         
+  "address":"alsharqi",       
+  "street":"hala street",        
+  "zipCode":"23200",
+  "numberOFSofa":1,
+  "space":32.5,      
+  "cancellationPolicy":{
+   "name":"one day",
+   "offSetMilli":86400000
+  },
+  "guestArrive":"02:00pm", 
+  "guestDepart":"12:00pm",
+  "canSmoke":false,
+  "canHaveChildren":true,     
+  "acceptPet":true,           
+  "acceptForeigner":true,
+  "price":15,               
+  "currency":"JD",            
+  "hasParking":true ,         
+  "hasBreakfast":false,
+  "ContactPersonName":"fares",
+  "countryCode":"862",
+  "phoneNumber":"29865874343",
+  "numberOfBedroom":3,         
+  "numberOfBathroom":3,        
+  "numberOfLivingroom":2, 
+  "type":"middle size department with separate gate",                   
+  "languages":[
+  {
+     "language":"arabic"
+     
+  },
+  {
+      "language":"English"
+  } 
+  ],              
+  "bedOptions":[
+      {
+          "kind":"single",
+          "numberOFBed":2
+      },
+      {
+          "kind":"double",
+          "numberOFBed":1
+      }
+  ],              
+  "images":[
+      {
+          "imageUrl":"myImage1.png"
+      },
+      {
+          "imageUrl":"myImage2.png"
+      },
+      {
+          "imageUrl":"myImage3.png"
+      },
+      {
+          "imageUrl":"myImage4.png"
+      }
+  ],                  
+  "amenities":[
+      {
+          "name":"parking",
+          "icon":"parking.png"
+      },
+      {
+          "name":"air condition",
+          "icon":"ac.png"
+      }
+  ],              
+  "facilities":[
+     {
+         "name":"balacony",
+         "icon":"balacony.png"
+     },
+      {
+         "name":"study desk",
+         "icon":"desk.png"
+     }
+  ]              
+}
+
+// for posting one order
+{
+    "propertyId":1,
+    "checkIn":"2022-07-06T08:01:13.570Z",
+    "checkOut":"2022-07-10T08:01:13.570Z",
+    "isForWork":false,
+    "firstName":"obada",
+    "secondName":"raed",
+    "email":"obada",
+    "arrivalTime":"1:00pm",
+    "country":"Jordan",
+    "phoneNumber":"2894752893",
+    "cardHolderName":"OBADA",
+    "cardType":"mastercard",
+    "cardNumber":"9875298652986275",
+    "expirationDate":"2025-07-06T08:01:13.570Z" 
+}
+
+

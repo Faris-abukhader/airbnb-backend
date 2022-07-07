@@ -1,6 +1,5 @@
 const {    
     createOneNotification,
-    createManyNotifications,
     getNotificationById,
     getAllNotifications,
     updateOnNotification,
@@ -54,33 +53,7 @@ const {
       },
       handler: createOneNotification,
     }
-  
-    const postManyNotificationSchema = {
-      schema: {
-        body: {
-          type: 'array',
-          items:{
-            required: ['senderId','recieverId','title','content'],
-            type:'object',
-            properties: {
-                senderId: { type: 'integer' },
-                recieverId: { type: 'integer' },
-                title: { type: 'string' },
-                content: { type: 'string' },
-                isSeen: { type: 'integer' },
-                createdAt:{type:'string'}    
-                },  
-          }
-        },
-        response: {
-          201: {
-            type:'array',
-            items:notificationObject
-          },
-        },
-      },
-      handler: createManyNotifications,
-    }
+
   
     const updateNotificationSchema = {
       schema: {
@@ -126,7 +99,6 @@ const {
         getOneNotificationSchema,
         getAllNotificationsSchema,
         postOneNotificationSchema,
-        postManyNotificationSchema,
         updateNotificationSchema,
         deleteNotificationSchema,
         deleteAllNotificationSchema,

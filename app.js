@@ -1,5 +1,6 @@
 const fastify = require('fastify')({ logger: true })
 const PORT = process.env.PORT || 4500
+const {sign} = require('jsonwebtoken')
 
 // documentation ui Swagger library register
 fastify.register(require('@fastify/swagger'), {
@@ -64,7 +65,7 @@ fastify.register(require('./routes/propertyType'),{prefix:'/propertyType'})
 // Run the server!
 const start = async () => {
   try {
-    await fastify.listen({ port: PORT })
+    await fastify.listen(process.env.PORT, '0.0.0.0')
     fastify.swagger()
   } catch (err) {
     fastify.log.error(err)
@@ -74,8 +75,8 @@ const start = async () => {
 start()
 
 
-// fastify.get('/token/:email',async(req,res)=>{
-//     const {email} = req.params
-//     const token = sign({email:email},process.env.JWT_SECRET)
-//     res.send({token})
-// })
+fastify.get('/token/:email',async(req,res)=>{
+    const {email} = req.params
+    const token = sign({email:email},process.env.JWT_SECRET)
+    res.send({token})
+})

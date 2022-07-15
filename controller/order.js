@@ -120,7 +120,7 @@ const getAllOrders = async(req,reply)=>{
                     transaction:true,  
                 }
             })
-            reply.send({data,pageNumber:Math.ceil(length/25)})                
+            reply.send({data,pageNumber:Math.ceil(length/orderRange)})                
         })
     }catch(error){
      reply.send(error)

@@ -4,7 +4,8 @@ const {
     postOneStaff,
     updateOneStaff,
     deleteOneStaff,
-    deleteAllStaff
+    deleteAllStaff,
+    deleteManyStaff
   } = require('../controller/staff')
   const adminMiddleware = require('../prevalidation/admin')
   const staffMiddleware = require('../prevalidation/staff')
@@ -28,10 +29,17 @@ const {
     const getAllStaffsSchema = {
       schema: {
         response: {
-          200: {
-            type:'array',
-            items:staffObject
-          },
+          200:
+          {
+            type: 'object',
+            properties: {
+              data:{
+                type: 'array',
+                item: staffObject,
+              },          
+              pageNumber: { type: 'integer' },
+            }
+          }
         },
       },
       preValidation:adminMiddleware,
@@ -42,7 +50,7 @@ const {
       schema: {
         body:{
           type:'object',
-          // required:['email','firstName','secondName','image'],
+          required:['email','firstName','secondName','image'],
           properties:{
             email:{type:'string'},
             firstName:{type:'string'},
@@ -111,6 +119,21 @@ const {
       preValidation:adminMiddleware,
       handler: deleteAllStaff,
     }
+
+    const deleteManyStaffsSchema = {
+      schema: {
+        response: {
+          200:{
+            type:'object',
+            properties:{
+              count:{type:'integer'},
+            }  
+          },
+        },
+      },
+      preValidation:adminMiddleware,
+      handler: deleteManyStaff,
+    }
   
     module.exports = {
         getOneStaffSchema,
@@ -118,5 +141,6 @@ const {
         postOneStaffSchema,
         updateOneStaffSchema,
         deleteOneStaffSchema,
-        deleteAllStaffsSchema
+        deleteAllStaffsSchema,
+        deleteManyStaffsSchema
     }

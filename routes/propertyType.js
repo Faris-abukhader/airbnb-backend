@@ -6,11 +6,12 @@ const {
     updatePropertyTypeSchema,
     deleteOnePropertyTypeSchema,
     deleteAllPropertyTypesSchema,
+    deleteManyPropertyTypesSchema
 } = require('../schema/propertyTypeSchema')  
 const propertyTypeRoutes = (fastify, options, done)=> {
   
     // Get all items
-    fastify.get('/', getAllPropertyTypesSchema)
+    fastify.get('/all/:pageNumber?', getAllPropertyTypesSchema)
   
     // Get single items
     fastify.get('/:id', getOnePropertyTypeSchema)
@@ -25,7 +26,7 @@ const propertyTypeRoutes = (fastify, options, done)=> {
     fastify.delete('/:id', deleteOnePropertyTypeSchema)
 
     // Delete all items
-    fastify.delete('/', deleteAllPropertyTypesSchema)
+    fastify.delete('/', deleteManyPropertyTypesSchema)
   
     // Update item
     fastify.put('/:id', updatePropertyTypeSchema)

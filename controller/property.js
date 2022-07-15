@@ -1,6 +1,7 @@
 const {PrismaClient} = require('@prisma/client')
 const { sendNewNotification } = require('../configuration/notifcationCenter')
 const prisma  = new PrismaClient()
+const {propertyRange} = require('../configuration/paginationRange')
 
 const postOneProperty = async(req,reply)=>{
     try{
@@ -152,8 +153,8 @@ const getAllApprovedProperties = async(req,reply)=>{
             }
         }).then(async(length)=>{
             let data = await prisma.property.findMany({
-                take:25,
-                skip:toSkip ? (pageNo-1)*25:0,
+                take:propertyRange,
+                skip:toSkip ? (pageNo-1)*propertyRange:0,
                 where:{
                  approve:{
                     isApproved:true
@@ -223,8 +224,8 @@ const getAllProperties = async(req,reply)=>{
         }
         await prisma.property.count().then(async(length)=>{
             let data = await prisma.property.findMany({
-                take:25,
-                skip:toSkip ? (pageNo-1)*25:0,
+                take:propertyRange,
+                skip:toSkip ? (pageNo-1)*propertyRange:0,
                 include:{
                   owner:true,
                   images:{
@@ -382,8 +383,8 @@ const searchOneProperty = async(req,reply)=>{
       }).then(async(length)=>{
         let data = await prisma.property.findMany({
           where,
-          take:25,
-          skip:toSkip ? (pageNo-1)*25:0,
+          take:propertyRange,
+          skip:toSkip ? (pageNo-1)*propertyRange:0,
           include:{
             owner:true,
             images:{

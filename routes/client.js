@@ -3,12 +3,12 @@ const {
     getAllClientsSchema,
     updateOneClientSchema,
     deleteOneClientSchema,
-    deleteAllClientsSchema
+    deleteAllClientsSchema,
 } = require('../schema/clientSchema')  
 const clientRoutes = (fastify, options, done)=> {
   
     // Get all items
-    fastify.get('/', getAllClientsSchema)
+    fastify.get('/all/:pageNumber?', getAllClientsSchema)
   
     // Get single items
     fastify.get('/:id', getOneClientSchema)
@@ -17,7 +17,7 @@ const clientRoutes = (fastify, options, done)=> {
     fastify.delete('/:id', deleteOneClientSchema)
 
     // Delete all items
-    fastify.delete('/', deleteAllClientsSchema)
+    // fastify.delete('/', deleteAllClientsSchema)
   
     // Update item
     fastify.put('/:id', updateOneClientSchema)

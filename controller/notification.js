@@ -1,5 +1,6 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
+const {notificationRange} = require('../configuration/paginationRange')
 
 const sendOneNotification = async({recieverId,title,content})=>{
     await prisma.notification.create({
@@ -55,23 +56,41 @@ const getOneUserTopNotifications = async(req,reply)=>{
 }
 
 const getOnClientNotifications = async(req,reply)=>{
+    let pageNo = 0
+    let toSkip = false
+    if(req.params.pageNumber){
+      pageNo = req.params.pageNumber
+      toSkip = true
+    }
+
     try{
         const id = Number.parseInt(req.params.id)
-        const notifications = await prisma.notification.findMany({
+        await prisma.notification.count({
             where:{
                 recieverId:id
-            },
-            orderBy:{
-                createdAt:'desc'
             }
+        }).then(async(length)=>{
+            const data = await prisma.notification.findMany({
+                where:{
+                    recieverId:id
+                    
+                },
+                orderBy:{
+                    createdAt:'desc'
+                },    
+                take:notificationRange,
+                skip:toSkip ? (pageNo-1)*notificationRange:0,
+            })
+            reply.send({data,pageNumber:Math.ceil(length/25)})                
         })
-        reply.send(notifications)
+
     }catch(error){
         reply.send(error)
     }
 }
 
 const getNotificationById = async(req,reply)=>{
+
     try{
         const id = Number.parseInt(req.params.id)
         const targetNotification = await prisma.notification.findUnique({where:{id}})
@@ -83,9 +102,24 @@ const getNotificationById = async(req,reply)=>{
 }
 
 const getAllNotifications = async(req,reply)=>{
+    let pageNo = 0
+    let toSkip = false
+    if(req.params.pageNumber){
+      pageNo = req.params.pageNumber
+      toSkip = true
+    }
+
     try{
-        const notifications = await prisma.notification.findMany({})
-        reply.send(notifications)
+        await prisma.notification.count({}).then(async(length)=>{
+            const data = await prisma.notification.findMany({
+                orderBy:{
+                    createdAt:'desc'
+                },    
+                take:notificationRange,
+                skip:toSkip ? (pageNo-1)*notificationRange:0,
+            })
+            reply.send({data,pageNumber:Math.ceil(length/25)})                
+        })
     }catch(error){
         reply.send(error)
     }
@@ -105,6 +139,7 @@ const updateOnNotification = async(req,reply)=>{
                 content
             }
         })
+        reply.send(notification)
     }catch(error){
         reply.send(error)
     }
@@ -131,6 +166,23 @@ const deleteAllNotifications = async(req,reply)=>{
     }
 
 }
+
+const deleteManyNotification = async(req,reply)=>{
+    try{
+        const {ids} = req.body
+        const data = await prisma.notification.deleteMany({
+            where:{
+                id:{
+                    in:ids
+                }
+            }
+        })
+        reply.send(data)
+    }catch(err){
+        reply.send(err)
+    }
+}
+
 module.exports = {
     sendOneNotification,
     createOneNotification,
@@ -141,4 +193,5 @@ module.exports = {
     updateOnNotification,
     deleteOneNotification,
     deleteAllNotifications,
+    deleteManyNotification
 }

@@ -1,3 +1,4 @@
+const { deleteManyAmenites } = require('../controller/amenity')
 const {    
     getOneFacility,
     getAllFacilities,
@@ -28,10 +29,17 @@ const {
     const getAllFacilitiesSchema = {
       schema: {
         response: {
-          200: {
-            type:'array',
-            items:facilityObject
-          },
+          200:
+          {
+            type: 'object',
+            properties: {
+              data:{
+                type: 'array',
+                item: facilityObject,
+              },          
+              pageNumber: { type: 'integer' },
+            }
+          }
         },
       },
       preValidation:websiteMiddleware,
@@ -59,14 +67,19 @@ const {
     const postManyFacilitiesSchema = {
       schema: {
         body: {
-          type: 'array',
-          items:{
-            required: ['name'],
-            type:'object',
-            properties: {
-                name: { type: 'string' },
-                icon: { type: 'string' },
-              },  
+          type:'object',
+          properties:{
+            data:{
+              type:'array',
+              items:{
+                required: ['name','icon'],
+                type:'object',
+                properties: {
+                    name: { type: 'string' },
+                    icon: { type: 'string'}
+                },  
+              }
+            }
           }
         },
         response: {
@@ -122,6 +135,22 @@ const {
       preValidation:adminMiddleware,
       handler: deleteAllFacilities,
     }
+
+    const deleteManyFacilitiesSchema = {
+      schema: {
+        response: {
+          200:{
+            type:'object',
+            properties:{
+              count:{type:'integer'},
+            }  
+          },
+        },
+      },
+      preValidation:adminMiddleware,
+      handler: deleteManyAmenites,
+    }
+
   
     module.exports = {
         getOneFacilitySchema,
@@ -131,4 +160,5 @@ const {
         updateFacilitySchema,
         deleteOneFacilitySchema,
         deleteAllFacilitiesSchema,
+        deleteManyFacilitiesSchema
     }

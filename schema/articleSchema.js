@@ -28,18 +28,18 @@ const {
     const getAllArticlesSchema = {
       schema: {
         response: {
-            200:
-            {
-              type: 'object',
-              properties: {
-                data:{
-                  type: 'array',
-                  item: articleObject,
-                },          
-                pageNumber: { type: 'integer' },
-              }
+          200:
+          {
+            type: 'object',
+            properties: {
+              data:{
+                type: 'array',
+                item: articleObject,
+              },          
+              pageNumber: { type: 'integer' },
             }
-          },
+          }
+        },
       },
       preValidation:websiteMiddleware,
       handler: getallArticles,

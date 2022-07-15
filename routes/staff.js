@@ -4,12 +4,13 @@ const {
     postOneStaffSchema,
     updateOneStaffSchema,
     deleteOneStaffSchema,
-    deleteAllStaffsSchema
+    deleteAllStaffsSchema,
+    deleteManyStaffsSchema
 } = require('../schema/staffSchema')  
 const staffRoutes = (fastify, options, done)=> {
   
     // Get all items
-    fastify.get('/', getAllStaffsSchema)
+    fastify.get('/all/:pageNumber?', getAllStaffsSchema)
   
     // Get single items
     fastify.get('/:id', getOneStaffSchema)
@@ -20,7 +21,7 @@ const staffRoutes = (fastify, options, done)=> {
     fastify.delete('/:id', deleteOneStaffSchema)
 
     // Delete all items
-    fastify.delete('/', deleteAllStaffsSchema)
+    fastify.delete('/', deleteManyStaffsSchema)
   
     // Update item
     fastify.put('/:id', updateOneStaffSchema)

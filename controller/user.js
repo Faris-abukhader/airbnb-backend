@@ -1,17 +1,31 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
 const {sendNewNotification} = require('../configuration/notifcationCenter')
+const {userRange} = require('../configuration/paginationRange')
 
   
 const getAllUsers = async(req, reply) => {
+
+  let pageNo = 0
+  let toSkip = false
+  if(req.params.pageNumber){
+    pageNo = req.params.pageNumber
+    toSkip = true
+  }
+
   try{
-    const users = await prisma.user.findMany({
-      include:{
-        client:true,
-        staff:true
-      }
-    })
-  reply.send(users)
+      await prisma.user.count().then(async(length)=>{
+          const data = await prisma.user.findMany({
+              take:userRange,
+              skip:toSkip ? (pageNo-1)*userRange:0,
+              include:{
+                client:true,
+                staff:true
+              }
+            
+          })
+          reply.send({data,pageNumber:Math.ceil(length/25)})                
+      })
   }catch(error){
     reply.send(error)
   }

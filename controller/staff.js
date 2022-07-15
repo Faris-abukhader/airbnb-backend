@@ -1,5 +1,6 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
+const {staffRange} = require('../configuration/paginationRange')
 
 const getOneStaff = async(req,reply)=>{
     try{
@@ -63,10 +64,22 @@ const postOneStaff = async(req,reply)=>{
 }
 
 const getAllStaffs = async(req,reply)=>{
-    try{
-        const staffs = await prisma.staff.findMany({})
-        reply.send(staffs)
-    }catch(error){
+  let pageNo = 0
+  let toSkip = false
+  if(req.params.pageNumber){
+    pageNo = req.params.pageNumber
+    toSkip = true
+  }
+
+  try{
+      await prisma.staff.count().then(async(length)=>{
+          const data = await prisma.staff.findMany({
+              take:staffRange,
+              skip:toSkip ? (pageNo-1)*staffRange:0,
+          })
+          reply.send({data,pageNumber:Math.ceil(length/25)})                
+      })
+  }catch(error){
      reply.send(error)
     }
 }
@@ -114,11 +127,28 @@ const deleteAllStaff = async(req,reply)=>{
     }
 }
 
+const deleteManyStaff = async(req,reply)=>{
+  try{
+      const {ids} = req.body
+      const data = await prisma.articleTopic.deleteMany({
+          where:{
+              id:{
+                  in:ids
+              }
+          }
+      })
+      reply.send(data)
+  }catch(err){
+      reply.send(err)
+  }
+}
+
 module.exports = {
     getOneStaff,
     getAllStaffs,
     postOneStaff,
     updateOneStaff,
     deleteOneStaff,
-    deleteAllStaff
+    deleteAllStaff,
+    deleteManyStaff
 }

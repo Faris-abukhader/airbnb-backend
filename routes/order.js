@@ -36,7 +36,7 @@ const orderRoutes = (fastify, options, done)=> {
 
     fastify.delete('/:id',deleteOneOrderSchema)
 
-    fastify.delete('/',deleteAllOrdersSchema)
+    // fastify.delete('/',deleteAllOrdersSchema)
 
     done()
   }

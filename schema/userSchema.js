@@ -17,10 +17,17 @@ const {
   const getAllUsersSchema = {
     schema: {
       response: {
-        200: {
-          type: 'array',
-          items: userObject,
-        },
+        200:
+        {
+          type: 'object',
+          properties: {
+            data:{
+              type: 'array',
+              item: userObject,
+            },          
+            pageNumber: { type: 'integer' },
+          }
+        }
       },
     },
     preValidation:adminMiddleware,

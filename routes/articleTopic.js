@@ -5,11 +5,13 @@ const {
     postManyArticleTopicObjects,
     updateArticleTopicObject,
     deleteArticleTopicObject,
-    deleteAllArticleTopicObjects} = require('../schema/articleTopicSchema')  
+    deleteAllArticleTopicObjects,
+    deleteManyArticleTopicObjects
+} = require('../schema/articleTopicSchema')  
 const articleTopicRoutes = (fastify, options, done)=> {
   
     // Get all items
-    fastify.get('/', getAllArticleTopicObjects)
+    fastify.get('/all/:pageNumber?', getAllArticleTopicObjects)
   
     // Get single items
     fastify.get('/:id', getArticleTopicObject)
@@ -24,7 +26,7 @@ const articleTopicRoutes = (fastify, options, done)=> {
     fastify.delete('/:id', deleteArticleTopicObject)
 
     // Delete all items
-    fastify.delete('/', deleteAllArticleTopicObjects)
+    fastify.delete('/', deleteManyArticleTopicObjects)
   
     // Update item
     fastify.put('/', updateArticleTopicObject)

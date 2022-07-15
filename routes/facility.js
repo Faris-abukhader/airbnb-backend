@@ -5,11 +5,13 @@ const {
     postManyFacilitiesSchema,
     updateFacilitySchema,
     deleteOneFacilitySchema,
-    deleteAllFacilitiesSchema} = require('../schema/facilitySchema')  
+    deleteAllFacilitiesSchema,
+    deleteManyFacilitiesSchema
+} = require('../schema/facilitySchema')  
 const facilityRoutes = (fastify, options, done)=> {
   
     // Get all items
-    fastify.get('/', getAllFacilitiesSchema)
+    fastify.get('/all/:pageNumber?', getAllFacilitiesSchema)
   
     // Get single items
     fastify.get('/:id', getOneFacilitySchema)
@@ -24,7 +26,7 @@ const facilityRoutes = (fastify, options, done)=> {
     fastify.delete('/:id', deleteOneFacilitySchema)
 
     // Delete all items
-    fastify.delete('/', deleteAllFacilitiesSchema)
+    fastify.delete('/', deleteManyFacilitiesSchema)
   
     // Update item
     fastify.put('/:id', updateFacilitySchema)

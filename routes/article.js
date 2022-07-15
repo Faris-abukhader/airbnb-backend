@@ -4,7 +4,7 @@ const {
     postOneArticleSchema,
     updateOneArticleSchema,
     deleteOneArticleSchema,
-    deleteAllArticlesSchema,
+    // deleteAllArticlesSchema,
 } = require('../schema/articleSchema')  
 const articleRoutes = (fastify, options, done)=> {
   
@@ -21,7 +21,7 @@ const articleRoutes = (fastify, options, done)=> {
     fastify.delete('/:id', deleteOneArticleSchema)
 
     // Delete all items
-    fastify.delete('/', deleteAllArticlesSchema)
+    // fastify.delete('/', deleteAllArticlesSchema)
   
     // Update item
     fastify.put('/:id', updateOneArticleSchema)

@@ -1,6 +1,8 @@
 const {PrismaClient} = require('@prisma/client')
 const { sendNewNotification } = require('../configuration/notifcationCenter')
 const prisma = new PrismaClient()
+const {orderRange} = require('../configuration/paginationRange')
+
 const getOneOrder = async(req,reply)=>{
     try{
         const id = Number.parseInt(req.params.id)
@@ -43,7 +45,10 @@ const getOnePropertyOrders = async(req,reply)=>{
                 id:propertyId
             }
             ,include:{
-                bookingOrders:true
+                bookingOrders:{
+                    take:orderRange,
+                    skip:toSkip ? (pageNo-1)*orderRange:0,
+                }
             }
         })
         reply.send({data,pageNumber:Math.ceil(length/25)})                
@@ -79,8 +84,8 @@ const getOneClientOrders = async(req,reply)=>{
                         ownerId:clientId
                     }
                 },
-                take:25,
-                skip:toSkip ? (pageNo-1)*25:0,
+                take:orderRange,
+                skip:toSkip ? (pageNo-1)*orderRange:0,
                 include:{
                 review:true,
                 guestInfo:true,
@@ -106,8 +111,8 @@ const getAllOrders = async(req,reply)=>{
 
         await prisma.bookingOrder.count().then(async(length)=>{
             const data = await prisma.bookingOrder.findMany({
-                take:25,
-                skip:toSkip ? (pageNo-1)*25:0,
+                take:orderRange,
+                skip:toSkip ? (pageNo-1)*orderRange:0,
                 include:{
                     review:true,
                     guestInfo:true,

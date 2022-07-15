@@ -1,15 +1,23 @@
 const {    
-    createOneNotification,
-    getNotificationById,
-    getAllNotifications,
-    updateOnNotification,
-    deleteOneNotification,
-    deleteAllNotifications,
-  } = require('../controller/notification')
+  createOneNotification,
+  getNotificationById,
+  getAllNotifications,
+  getOnClientNotifications,
+  getOneUserTopNotifications,
+  updateOnNotification,
+  deleteOneNotification,
+  deleteAllNotifications,
+  deleteManyNotification
+} = require('../controller/notification')
 
   const {
     notificationObject
   } = require('../schema/schemaContainer')
+
+  const adminMiddleware = require('../prevalidation/admin')
+  const websiteMiddleware = require('../prevalidation/website')
+  const clientMiddleware = require('../prevalidation/client')
+  const staffMiddleware = require('../prevalidation/staff')
   
   
     const getOneNotificationSchema = {
@@ -18,19 +26,68 @@ const {
           200: notificationObject,
         },
       },
+      preValidation:clientMiddleware,
       handler: getNotificationById,
     }
     
     const getAllNotificationsSchema = {
       schema: {
         response: {
-          200: {
-            type:'array',
-            items:notificationObject
-          },
+          200:
+          {
+            type: 'object',
+            properties: {
+              data:{
+                type: 'array',
+                item: notificationObject,
+              },          
+              pageNumber: { type: 'integer' },
+            }
+          }
         },
       },
+      preValidation:adminMiddleware,
       handler: getAllNotifications,
+    }
+
+    const getOnClientNotificationsSchema = {
+      schema: {
+        response: {
+          200:
+          {
+            type: 'object',
+            properties: {
+              data:{
+                type: 'array',
+                item: notificationObject,
+              },          
+              pageNumber: { type: 'integer' },
+            }
+          }
+        },
+      },
+      preValidation:clientMiddleware,
+      handler:getOnClientNotifications
+    }
+
+    const getOneUserTopNotificationsSchema = {
+      schema: {
+        response: {
+          200:
+          {
+            type: 'object',
+            properties: {
+              data:{
+                type: 'array',
+                item: notificationObject,
+              },          
+              pageNumber: { type: 'integer' },
+            }
+          }
+        },
+      },
+      preValidation:clientMiddleware,
+      handler:getOneUserTopNotifications
     }
     
     const postOneNotificationSchema = {
@@ -51,6 +108,7 @@ const {
           201: notificationObject,
         },
       },
+      preValidation:staffMiddleware,
       handler: createOneNotification,
     }
 
@@ -69,6 +127,7 @@ const {
           200: notificationObject,
         },
       },
+      preValidation:staffMiddleware,
       handler: updateOnNotification,
     }
     
@@ -78,6 +137,7 @@ const {
           200: notificationObject
         },
       },
+      preValidation:adminMiddleware,
       handler: deleteOneNotification
     }
   
@@ -92,14 +152,34 @@ const {
           },
         },
       },
+      preValidation:adminMiddleware,
       handler: deleteAllNotifications,
     }
+
+    const deleteManyNotificationSchema = {
+      schema: {
+        response: {
+          200:{
+            type:'object',
+            properties:{
+              count:{type:'integer'},
+            }  
+          },
+        },
+      },
+      preValidation:adminMiddleware,
+      handler: deleteManyNotification,
+    }
+
   
     module.exports = {
         getOneNotificationSchema,
         getAllNotificationsSchema,
+        getOnClientNotificationsSchema,
+        getOneUserTopNotificationsSchema,
         postOneNotificationSchema,
         updateNotificationSchema,
         deleteNotificationSchema,
         deleteAllNotificationSchema,
+        deleteManyNotificationSchema
     }

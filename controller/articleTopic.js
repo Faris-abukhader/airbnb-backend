@@ -1,5 +1,7 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
+const {articleTopicRange} = require('../configuration/paginationRange')
+
 
 const getArticleTopic = async(req, reply) => {
     try{
@@ -17,9 +19,20 @@ const getArticleTopic = async(req, reply) => {
 }
 
 const getAllArticleTopics = async(req, reply) => {
+    let pageNo = 0
+    let toSkip = false
+    if(req.params.pageNumber){
+      pageNo = req.params.pageNumber
+      toSkip = true
+    }
     try{
-        const data = await prisma.articleTopic.findMany({})
-        reply.send(data)
+        await prisma.articleTopic.count().then(async(length)=>{
+          const data = await prisma.articleTopic.findMany({
+            take:articleTopicRange,
+            skip:toSkip ? (pageNo-1)*articleTopicRange:0,
+          })
+          reply.send({data,pageNumber:Math.ceil(length/25)})                
+        })
     }catch(error){
         reply.send(error)
     }
@@ -84,6 +97,23 @@ const deleteAllArticleTopics = async(req, reply) => {
     }
 }
 
+const deleteManyArticleTopic = async(req,reply)=>{
+    try{
+        const {ids} = req.body
+        const data = await prisma.articleTopic.deleteMany({
+            where:{
+                id:{
+                    in:ids
+                }
+            }
+        })
+        reply.send(data)
+    }catch(err){
+        reply.send(err)
+    }
+}
+
+
   module.exports = {
     getArticleTopic,
     getAllArticleTopics,
@@ -91,6 +121,7 @@ const deleteAllArticleTopics = async(req, reply) => {
     postManyArticleTopics,
     updateOneArticle,
     deleteArticleTopic,
-    deleteAllArticleTopics
+    deleteAllArticleTopics,
+    deleteManyArticleTopic
   }
   

@@ -5,7 +5,8 @@ const {
     createManyLanguages,
     updateOneLanguage,
     deleteOneLanguage,
-    deleteAllLanguages
+    deleteAllLanguages,
+    deleteManyLanguages
   } = require('../controller/language')
   const adminMiddleware = require('../prevalidation/admin')
   const websiteMiddleware = require('../prevalidation/website')
@@ -27,10 +28,17 @@ const {
     const getAllLanguagesSchema = {
       schema: {
         response: {
-          200: {
-            type:'array',
-            items:languageObject
-          },
+          200:
+          {
+            type: 'object',
+            properties: {
+              data:{
+                type: 'array',
+                item: languageObject,
+              },          
+              pageNumber: { type: 'integer' },
+            }
+          }
         },
       },
       preValidation:websiteMiddleware,
@@ -57,13 +65,18 @@ const {
     const postManyLanguageSchema = {
       schema: {
         body: {
-          type: 'array',
-          items:{
-            required: ['name'],
-            type:'object',
-            properties: {
-                name: { type: 'integer' },
+          type:'object',
+          properties:{
+            data:{
+              type:'array',
+              items:{
+                required: ['name'],
+                type:'object',
+                properties: {
+                    name: { type: 'string' },
                 },  
+              }
+            }
           }
         },
         response: {
@@ -119,6 +132,21 @@ const {
       handler: deleteAllLanguages,
     }
 
+    const deleteManyLanguagesSchema = {
+      schema: {
+        response: {
+          200:{
+            type:'object',
+            properties:{
+              count:{type:'integer'},
+            }  
+          },
+        },
+      },
+      preValidation:adminMiddleware,
+      handler: deleteManyLanguages,
+    }
+
   
     module.exports = {
         getOneLanguageSchema,
@@ -128,4 +156,5 @@ const {
         updateLanguageSchema,
         deleteOneLanguageSchema,
         deleteAllLanguagesSchema,
+        deleteManyLanguagesSchema
     }

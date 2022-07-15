@@ -13,7 +13,6 @@ const adminMiddleware = require('../prevalidation/admin')
 const clientMiddleware = require('../prevalidation/client')
 const staffMiddleware = require('../prevalidation/staff')
 const websiteMiddleware = require('../prevalidation/website')
-const fastify = require('fastify')()
 
 const {
   propertyObject,
@@ -113,7 +112,7 @@ const getAllPropertiesSchema = {
       }
     },
   },
-  preValidation:adminMiddleware,
+  preValidation:websiteMiddleware,
   handler: getAllProperties
 }
 

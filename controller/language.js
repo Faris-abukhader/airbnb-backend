@@ -1,5 +1,6 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
+const {languageRange} = require('../configuration/paginationRange')
 
 
 const getOneLanguage = async(req,reply)=>{
@@ -17,9 +18,21 @@ const getOneLanguage = async(req,reply)=>{
 }
 
 const getAllLanguages = async(req,reply)=>{
+    let pageNo = 0
+    let toSkip = false
+    if(req.params.pageNumber){
+      pageNo = req.params.pageNumber
+      toSkip = true
+    }
+
     try{
-        const targetLanguages = await prisma.language.findMany({})
-        reply.send(targetLanguages)
+        await prisma.language.count().then(async(length)=>{
+            const data = await prisma.language.findMany({
+                take:languageRange,
+                skip:toSkip ? (pageNo-1)*languageRange:0,
+            })
+            reply.send({data,pageNumber:Math.ceil(length/25)})                
+        })
     }catch(err){
         reply.send(err)
     }
@@ -42,7 +55,7 @@ const createOneLanguage = async(req,reply)=>{
 const createManyLanguages = async(req,reply)=>{
     try{
      const {data} = req.body
-     const languages = await prisma.language.createMany(data)
+     const languages = await prisma.language.createMany({data})
      reply.send(languages)
     }catch(err){
         reply.send(err)
@@ -90,6 +103,23 @@ const deleteAllLanguages = async(req,reply)=>{
     }
 }
 
+const deleteManyLanguages = async(req,reply)=>{
+    try{
+        const {ids} = req.body
+        const targetLanguages = await prisma.language.deleteMany({
+            where:{
+                id:{
+                    in:ids
+                }
+            }
+        })
+        reply.send(targetLanguages)
+    }catch(err){
+        reply.send(err)
+    }
+}
+
+
 module.exports = {
     getOneLanguage,
     getAllLanguages,
@@ -97,5 +127,6 @@ module.exports = {
     createManyLanguages,
     updateOneLanguage,
     deleteOneLanguage,
-    deleteAllLanguages
+    deleteAllLanguages,
+    deleteManyLanguages
 }

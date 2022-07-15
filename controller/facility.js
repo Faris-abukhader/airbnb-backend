@@ -1,5 +1,6 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
+const {facilityRange} = require('../configuration/paginationRange')
 
 
 const getOneFacility = async(req,reply)=>{
@@ -17,9 +18,21 @@ const getOneFacility = async(req,reply)=>{
 }
 
 const getAllFacilities = async(req,reply)=>{
+    let pageNo = 0
+    let toSkip = false
+    if(req.params.pageNumber){
+      pageNo = req.params.pageNumber
+      toSkip = true
+    }
+
     try{
-        const targetFacilities = await prisma.facility.findMany({})
-        reply.send(targetFacilities)
+        await prisma.facility.count().then(async(length)=>{
+            const data = await prisma.facility.findMany({
+                take:facilityRange,
+                skip:toSkip ? (pageNo-1)*facilityRange:0,
+            })
+            reply.send({data,pageNumber:Math.ceil(length/25)})                
+        })
     }catch(err){
         reply.send(err)
     }
@@ -92,6 +105,23 @@ const deleteAllFacilities = async(req,reply)=>{
     }
 }
 
+const deleteManyFacilities = async(req,reply)=>{
+    try{
+        const {ids} = req.body
+        const data = await prisma.facility.deleteMany({
+            where:{
+                id:{
+                    in:ids
+                }
+            }
+        })
+        reply.send(data)
+    }catch(err){
+        reply.send(err)
+    }
+}
+
+
 module.exports = {
     getOneFacility,
     getAllFacilities,
@@ -99,5 +129,6 @@ module.exports = {
     createManyFacilities,
     updateOneFacility,
     deleteOneFacility,
-    deleteAllFacilities
+    deleteAllFacilities,
+    deleteManyFacilities
 }

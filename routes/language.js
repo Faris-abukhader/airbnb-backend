@@ -6,11 +6,12 @@ const {
     updateLanguageSchema,
     deleteOneLanguageSchema,
     deleteAllLanguagesSchema,
+    deleteManyLanguagesSchema
 } = require('../schema/languageSchema')  
 const languageRoutes = (fastify, options, done)=> {
   
     // Get all items
-    fastify.get('/', getAllLanguagesSchema)
+    fastify.get('/all/:pageNumber?', getAllLanguagesSchema)
   
     // Get single items
     fastify.get('/:id', getOneLanguageSchema)
@@ -25,7 +26,7 @@ const languageRoutes = (fastify, options, done)=> {
     fastify.delete('/:id', deleteOneLanguageSchema)
 
     // Delete all items
-    fastify.delete('/', deleteAllLanguagesSchema)
+    fastify.delete('/', deleteManyLanguagesSchema)
   
     // Update item
     fastify.put('/:id', updateLanguageSchema)

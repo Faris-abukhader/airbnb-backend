@@ -5,7 +5,8 @@ const {
     createManyTypes,
     updateOneType,
     deleteOneType,
-    deleteAllTypes
+    deleteAllTypes,
+    deleteManyType
       } = require('../controller/propertyType')
   const adminMiddleware = require('../prevalidation/admin')
   const websiteMiddleware = require('../prevalidation/website')
@@ -26,10 +27,17 @@ const {
     const getAllPropertyTypesSchema = {
       schema: {
         response: {
-          200: {
-            type:'array',
-            items:propertyTypeObject
-          },
+          200:
+          {
+            type: 'object',
+            properties: {
+              data:{
+                type: 'array',
+                item: propertyTypeObject,
+              },          
+              pageNumber: { type: 'integer' },
+            }
+          }
         },
       },
       preValidation:websiteMiddleware,
@@ -56,12 +64,18 @@ const {
     const postManyPropertyTypesSchema = {
       schema: {
         body: {
-          type: 'object',
+          type:'object',
           properties:{
-              "data":{
-                  type:'array',
-                  items:propertyTypeObject
+            data:{
+              type:'array',
+              items:{
+                required: ['name'],
+                type:'object',
+                properties: {
+                    name: { type: 'string' },
+                },  
               }
+            }
           }
         },
         response: {
@@ -116,6 +130,22 @@ const {
       preValidation:adminMiddleware,
       handler: deleteAllTypes,
     }
+
+    const deleteManyPropertyTypesSchema = {
+      schema: {
+        response: {
+          200:{
+            type:'object',
+            properties:{
+              count:{type:'integer'},
+            }  
+          },
+        },
+      },
+      preValidation:adminMiddleware,
+      handler: deleteManyType,
+    }
+
   
     module.exports = {
         getOnePropertyTypeSchema,
@@ -125,4 +155,5 @@ const {
         updatePropertyTypeSchema,
         deleteOnePropertyTypeSchema,
         deleteAllPropertyTypesSchema,
+        deleteManyPropertyTypesSchema
     }

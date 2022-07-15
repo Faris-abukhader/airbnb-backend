@@ -5,7 +5,8 @@ const {
     createManyAmenities,
     updateOneAmenity,
     deleteOneAmenity,
-    deleteAllAmenities
+    deleteAllAmenities,
+    deleteManyAmenites
       } = require('../controller/amenity')
   const adminMiddleware = require('../prevalidation/admin')
   const websiteMiddleware = require('../prevalidation/website')
@@ -26,10 +27,17 @@ const {
     const getAllAmenitiesSchema = {
       schema: {
         response: {
-          200: {
-            type:'array',
-            items:amenityObject
-          },
+          200:
+          {
+            type: 'object',
+            properties: {
+              data:{
+                type: 'array',
+                item: amenityObject,
+              },          
+              pageNumber: { type: 'integer' },
+            }
+          }
         },
       },
       preValidation:websiteMiddleware,
@@ -57,14 +65,19 @@ const {
     const postManyAmenitiesSchema = {
       schema: {
         body: {
-          type: 'array',
-          items:{
-            required: ['name','icon'],
-            type:'object',
-            properties: {
-                name: { type: 'string' },
-                icon: { type: 'string' },
-            },  
+          type:'object',
+          properties:{
+            data:{
+              type:'array',
+              items:{
+                required: ['name','icon'],
+                type:'object',
+                properties: {
+                    name: { type: 'string' },
+                    icon:{type:'string'}
+                },  
+              }
+            }
           }
         },
         response: {
@@ -120,6 +133,21 @@ const {
       preValidation:adminMiddleware,
       handler: deleteAllAmenities,
     }
+
+    const deleteManyAmenitiesSchema = {
+      schema: {
+        response: {
+          200:{
+            type:'object',
+            properties:{
+              count:{type:'integer'},
+            }  
+          },
+        },
+      },
+      preValidation:adminMiddleware,
+      handler: deleteManyAmenites,
+    }
   
     module.exports = {
         getOneAmenitySchema,
@@ -129,4 +157,5 @@ const {
         updateAmenitySchema,
         deleteOneAmenitySchema,
         deleteAllAmenitiesSchema,
+        deleteManyAmenitiesSchema
     }

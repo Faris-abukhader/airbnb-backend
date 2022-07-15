@@ -4,12 +4,12 @@ const {
   postOneUserSchema,
   updateOneUserSchema,
   deleteOneUserSchema,
-  deleteAllUsersSchema
+  deleteAllUsersSchema,
 } = require('../schema/userSchema')  
 const userRoutes = (fastify, options, done)=> {
   
     // Get all items
-    fastify.get('/', getAllUsersSchema)
+    fastify.get('/all/:pageNumber?', getAllUsersSchema)
   
     // Get single items
     fastify.get('/:id', getOneUserSchema)
@@ -21,7 +21,7 @@ const userRoutes = (fastify, options, done)=> {
     fastify.delete('/:id', deleteOneUserSchema)
 
     // Delete all item
-    fastify.delete('/', deleteAllUsersSchema)
+    // fastify.delete('/', deleteAllUsersSchema)
 
     // Update item
     fastify.put('/:id', updateOneUserSchema)

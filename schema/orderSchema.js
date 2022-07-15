@@ -67,7 +67,7 @@ const {
               }
           },
         },
-        preValidation:getOnePropertyOrders,
+        preValidation:clientMiddleware,
         handler: getAllOrders,
       }
 

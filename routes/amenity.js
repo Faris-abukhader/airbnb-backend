@@ -6,17 +6,18 @@ const {
     updateAmenitySchema,
     deleteOneAmenitySchema,
     deleteAllAmenitiesSchema,
+    deleteManyAmenitiesSchema
 } = require('../schema/amenitySchema')  
 const amenityRoutes = (fastify, options, done)=> {
   
     // Get all items
-    fastify.get('/', getAllAmenitiesSchema)
+    fastify.get('/all/:pageNumber?', getAllAmenitiesSchema)
   
     // Get single items
     fastify.get('/:id', getOneAmenitySchema)
 
     // Add manay items
-    fastify.post('/many', postManyAmenitiesSchema)
+    fastify.post('/all/:pageNumber?', postManyAmenitiesSchema)
   
     // Add item
     fastify.post('/', postOneAmenitySchema)
@@ -25,7 +26,7 @@ const amenityRoutes = (fastify, options, done)=> {
     fastify.delete('/:id', deleteOneAmenitySchema)
 
     // Delete all items
-    fastify.delete('/', deleteAllAmenitiesSchema)
+    fastify.delete('/', deleteManyAmenitiesSchema)
   
     // Update item
     fastify.put('/:id', updateAmenitySchema)

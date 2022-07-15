@@ -27,10 +27,17 @@ const {
     const getAllClientsSchema = {
       schema: {
         response: {
-          200: {
-            type:'array',
-            items:clientObject
-          },
+          200:
+          {
+            type: 'object',
+            properties: {
+              data:{
+                type: 'array',
+                item: clientObject,
+              },          
+              pageNumber: { type: 'integer' },
+            }
+          }
         },
       },
       preValidation:adminMiddleware,

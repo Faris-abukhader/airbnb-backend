@@ -5,7 +5,8 @@ const {
   postManyArticleTopics,
   updateOneArticle,
   deleteArticleTopic,
-  deleteAllArticleTopics
+  deleteAllArticleTopics,
+  deleteManyArticleTopic
 } = require('../controller/articleTopic')
 const adminMiddleware = require('../prevalidation/admin')
 const websiteMiddleware = require('../prevalidation/website')
@@ -27,10 +28,17 @@ const {
   const getAllArticleTopicObjects = {
     schema: {
       response: {
-        200: {
-          type:'array',
-          items:articleTopicObject
-        },
+        200:
+        {
+          type: 'object',
+          properties: {
+            data:{
+              type: 'array',
+              item: articleTopicObject,
+            },          
+            pageNumber: { type: 'integer' },
+          }
+        }
       },
     },
     preValidation:websiteMiddleware,
@@ -57,13 +65,18 @@ const {
   const postManyArticleTopicObjects = {
     schema: {
       body: {
-        type: 'array',
-        items:{
-          required: ['title'],
-          type:'object',
-          properties: {
-            title: { type: 'string' },
-          },  
+        type:'object',
+        properties:{
+          data:{
+            type:'array',
+            items:{
+              required: ['title'],
+              type:'object',
+              properties: {
+                  title: { type: 'string' },
+              },  
+            }
+          }
         }
       },
       response: {
@@ -120,4 +133,29 @@ const {
     handler: deleteAllArticleTopics,
   }
 
-  module.exports = {getArticleTopicObject,getAllArticleTopicObjects,postArticleTopicObject,postManyArticleTopicObjects,updateArticleTopicObject,deleteArticleTopicObject,deleteAllArticleTopicObjects}
+  const deleteManyArticleTopicObjects = {
+    schema: {
+      response: {
+        200:{
+          type:'object',
+          properties:{
+            count:{type:'integer'},
+          }  
+        },
+      },
+    },
+    preValidation:adminMiddleware,
+    handler: deleteManyArticleTopic,
+  }
+
+
+  module.exports = {
+    getArticleTopicObject,
+    getAllArticleTopicObjects,
+    postArticleTopicObject,
+    postManyArticleTopicObjects,
+    updateArticleTopicObject,
+    deleteArticleTopicObject,
+    deleteAllArticleTopicObjects,
+    deleteManyArticleTopicObjects
+  }

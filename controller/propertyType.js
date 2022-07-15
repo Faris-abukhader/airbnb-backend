@@ -1,5 +1,6 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
+const {propertyTypeRange} = require('../configuration/paginationRange')
 
 
 const getOneType = async(req,reply)=>{
@@ -17,9 +18,21 @@ const getOneType = async(req,reply)=>{
 }
 
 const getAllTypes = async(req,reply)=>{
+    let pageNo = 0
+    let toSkip = false
+    if(req.params.pageNumber){
+      pageNo = req.params.pageNumber
+      toSkip = true
+    }
+
     try{
-        const targetTypes = await prisma.propertyType.findMany({})
-        reply.send(targetTypes)
+        await prisma.propertyType.count().then(async(length)=>{
+            const data = await prisma.propertyType.findMany({
+                take:propertyTypeRange,
+                skip:toSkip ? (pageNo-1)*amenityRange:0,
+            })
+            reply.send({data,pageNumber:Math.ceil(length/25)})                
+        })
     }catch(err){
         reply.send(err)
     }
@@ -90,6 +103,22 @@ const deleteAllTypes = async(req,reply)=>{
     }
 }
 
+const deleteManyType = async(req,reply)=>{
+    try{
+        const {ids} = req.body
+        const data = await prisma.propertyType.deleteMany({
+            where:{
+                id:{
+                    in:ids
+                }
+            }
+        })
+        reply.send(data)
+    }catch(err){
+        reply.send(err)
+    }
+}
+
 module.exports = {
     getOneType,
     getAllTypes,
@@ -97,5 +126,6 @@ module.exports = {
     createManyTypes,
     updateOneType,
     deleteOneType,
-    deleteAllTypes
+    deleteAllTypes,
+    deleteManyType
 }

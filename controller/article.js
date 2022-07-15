@@ -1,5 +1,6 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
+const {articleRange} = require('../configuration/paginationRange')
 
 
 const getOneArticle = async(req,reply)=>{
@@ -41,8 +42,8 @@ const getallArticles = async(req,reply)=>{
 
       await prisma.article.count().then(async(length)=>{
           const data = await prisma.article.findMany({
-            take:25,
-            skip:toSkip ? (pageNo-1)*25:0,
+            take:articleRange,
+            skip:toSkip ? (pageNo-1)*articleRange:0,
             include:{
                 publisher:true,
                 tags:true,

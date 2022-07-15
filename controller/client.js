@@ -1,5 +1,6 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
+const {clientRange} = require('../configuration/paginationRange')
 
 const getOneClient = async(req,reply)=>{
     try{
@@ -16,9 +17,21 @@ const getOneClient = async(req,reply)=>{
 }
 
 const getAllClients = async(req,reply)=>{
+    let pageNo = 0
+    let toSkip = false
+    if(req.params.pageNumber){
+      pageNo = req.params.pageNumber
+      toSkip = true
+    }
+
     try{
-        const clients = await prisma.client.findMany({})
-        reply.send(clients)
+        await prisma.client.count().then(async(length)=>{
+            const data = await prisma.client.findMany({
+                take:clientRange,
+                skip:toSkip ? (pageNo-1)*clientRange:0,
+            })
+            reply.send({data,pageNumber:Math.ceil(length/25)})    
+        })
     }catch(error){
      reply.send(error)
     }

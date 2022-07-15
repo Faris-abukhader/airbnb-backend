@@ -5,7 +5,8 @@ const {
     createManyCanelationOptions,
     updateOneCanelationOption,
     deleteOneCanelationOption,
-    deleteAllCanelationOptions
+    deleteAllCanelationOptions,
+    deleteManyCancelationOption
       } = require('../controller/cancelationOption')
   const adminMiddleware = require('../prevalidation/admin')
   const websiteMiddleware = require('../prevalidation/website')
@@ -26,10 +27,17 @@ const {
     const getAllCancelationOptionsSchema = {
       schema: {
         response: {
-          200: {
-            type:'array',
-            items:cancelOptionObject
-          },
+          200:
+          {
+            type: 'object',
+            properties: {
+              data:{
+                type: 'array',
+                item: cancelOptionObject,
+              },          
+              pageNumber: { type: 'integer' },
+            }
+          }
         },
       },
       preValidation:websiteMiddleware,
@@ -57,14 +65,19 @@ const {
     const postManyCanelationOptionsSchema = {
       schema: {
         body: {
-          type: 'array',
-          items:{
-            required: ['name','offSetMilli'],
-            type:'object',
-            properties: {
-                name: { type: 'string' },
-                offSetMilli: { type: 'integer' },
-            },  
+          type:'object',
+          properties:{
+            data:{
+              type:'array',
+              items:{
+                required: ['name','offSetMilli'],
+                type:'object',
+                properties: {
+                    name: { type: 'string' },
+                    offSetMilli: {type:'integer'}
+                },  
+              }
+            }
           }
         },
         response: {
@@ -120,6 +133,22 @@ const {
       preValidation:adminMiddleware,
       handler: deleteAllCanelationOptions,
     }
+
+    const deleteManyCanelationOptionsSchema = {
+      schema: {
+        response: {
+          200:{
+            type:'object',
+            properties:{
+              count:{type:'integer'},
+            }  
+          },
+        },
+      },
+      preValidation:adminMiddleware,
+      handler: deleteManyCancelationOption,
+    }
+
   
     module.exports = {
         getOneCancelationOptionSchema,
@@ -129,4 +158,5 @@ const {
         updateOneCancelationOptionSchema,
         deleteOneCanelationOptionSchema,
         deleteAllCanelationOptionsSchema,
+        deleteManyCanelationOptionsSchema
     }

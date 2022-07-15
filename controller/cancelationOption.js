@@ -1,5 +1,6 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
+const {cancelationOptionRange} = require('../configuration/paginationRange')
 
 
 const getOneCanelationOption = async(req,reply)=>{
@@ -17,9 +18,21 @@ const getOneCanelationOption = async(req,reply)=>{
 }
 
 const getAllCanelationOptions = async(req,reply)=>{
+    let pageNo = 0
+    let toSkip = false
+    if(req.params.pageNumber){
+      pageNo = req.params.pageNumber
+      toSkip = true
+    }
+
     try{
-        const targetCanelationOptions = await prisma.cancelationOption.findMany({})
-        reply.send(targetCanelationOptions)
+        await prisma.cancelationOption.count().then(async(length)=>{
+            const data = await prisma.cancelationOption.findMany({
+                take:cancelationOptionRange,
+                skip:toSkip ? (pageNo-1)*amenityRange:0,
+            })
+            reply.send({data,pageNumber:Math.ceil(length/25)})                
+        })
     }catch(err){
         reply.send(err)
     }
@@ -92,6 +105,23 @@ const deleteAllCanelationOptions = async(req,reply)=>{
     }
 }
 
+const deleteManyCancelationOption = async(req,reply)=>{
+    try{
+        const {ids} = req.body
+        const data = await prisma.cancelationOption.deleteMany({
+            where:{
+                id:{
+                    in:ids
+                }
+            }
+        })
+        reply.send(data)
+    }catch(err){
+        reply.send(err)
+    }
+}
+
+
 module.exports = {
     getOneCanelationOption,
     getAllCanelationOptions,
@@ -99,5 +129,6 @@ module.exports = {
     createManyCanelationOptions,
     updateOneCanelationOption,
     deleteOneCanelationOption,
-    deleteAllCanelationOptions
+    deleteAllCanelationOptions,
+    deleteManyCancelationOption
 }

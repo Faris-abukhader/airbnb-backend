@@ -6,11 +6,12 @@ const {
     updateOneCancelationOptionSchema,
     deleteOneCanelationOptionSchema,
     deleteAllCanelationOptionsSchema,
+    deleteManyCanelationOptionsSchema
 } = require('../schema/cancelationOptionSchema')  
 const cancelationOptionRoutes = (fastify, options, done)=> {
   
     // Get all items
-    fastify.get('/', getAllCancelationOptionsSchema)
+    fastify.get('/all/:pageNumber?', getAllCancelationOptionsSchema)
   
     // Get single items
     fastify.get('/:id', getOneCancelationOptionSchema)
@@ -25,7 +26,7 @@ const cancelationOptionRoutes = (fastify, options, done)=> {
     fastify.delete('/:id', deleteOneCanelationOptionSchema)
 
     // Delete all items
-    fastify.delete('/', deleteAllCanelationOptionsSchema)
+    fastify.delete('/', deleteManyCanelationOptionsSchema)
   
     // Update item
     fastify.put('/:id', updateOneCancelationOptionSchema)

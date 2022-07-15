@@ -31,7 +31,7 @@ const getAllAmenities = async(req,reply)=>{
                 take:amenityRange,
                 skip:toSkip ? (pageNo-1)*amenityRange:0,
             })
-            reply.send({data:targetAmenities,pageNumber:Math.ceil(length/25)})                
+            reply.send({data:targetAmenities,pageNumber:Math.ceil(amenityRange/25)})                
         })
     }catch(err){
         reply.send(err)

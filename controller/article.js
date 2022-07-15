@@ -60,7 +60,7 @@ const getallArticles = async(req,reply)=>{
             }
           })
 
-          reply.send({data,pageNumber:Math.ceil(length/25)})            
+          reply.send({data,pageNumber:Math.ceil(length/articleRange)})            
       }) 
     }catch(error){
         reply.send(error)

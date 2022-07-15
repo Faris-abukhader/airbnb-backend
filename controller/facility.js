@@ -31,7 +31,7 @@ const getAllFacilities = async(req,reply)=>{
                 take:facilityRange,
                 skip:toSkip ? (pageNo-1)*facilityRange:0,
             })
-            reply.send({data,pageNumber:Math.ceil(length/25)})                
+            reply.send({data,pageNumber:Math.ceil(length/facilityRange)})                
         })
     }catch(err){
         reply.send(err)

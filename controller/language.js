@@ -31,7 +31,7 @@ const getAllLanguages = async(req,reply)=>{
                 take:languageRange,
                 skip:toSkip ? (pageNo-1)*languageRange:0,
             })
-            reply.send({data,pageNumber:Math.ceil(length/25)})                
+            reply.send({data,pageNumber:Math.ceil(length/languageRange)})                
         })
     }catch(err){
         reply.send(err)

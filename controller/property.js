@@ -207,7 +207,7 @@ const getAllApprovedProperties = async(req,reply)=>{
                 bookingOrders:true
                 }
               })
-              reply.send({data,pageNumber:Math.ceil(length/25)})            
+              reply.send({data,pageNumber:Math.ceil(length/propertyRange)})            
         })
     }catch(error){
         reply.send(error)
@@ -273,7 +273,7 @@ const getAllProperties = async(req,reply)=>{
                 bookingOrders:true
                 }
               })
-              reply.send({data,pageNumber:Math.ceil(length/25)})            
+              reply.send({data,pageNumber:Math.ceil(length/propertyRange)})            
         })
     }catch(error){
         console.log(error)
@@ -404,7 +404,7 @@ const searchOneProperty = async(req,reply)=>{
           bookingOrders:true
           }
         })
-        reply.send({data,pageNumber:Math.ceil(length/25)})
+        reply.send({data,pageNumber:Math.ceil(length/propertyRange)})
       })
     }catch(err){
         reply.send(err)

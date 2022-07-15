@@ -77,7 +77,7 @@ const getAllStaffs = async(req,reply)=>{
               take:staffRange,
               skip:toSkip ? (pageNo-1)*staffRange:0,
           })
-          reply.send({data,pageNumber:Math.ceil(length/25)})                
+          reply.send({data,pageNumber:Math.ceil(length/staffRange)})                
       })
   }catch(error){
      reply.send(error)

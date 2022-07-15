@@ -24,7 +24,7 @@ const getAllUsers = async(req, reply) => {
               }
             
           })
-          reply.send({data,pageNumber:Math.ceil(length/25)})                
+          reply.send({data,pageNumber:Math.ceil(length/userRange)})                
       })
   }catch(error){
     reply.send(error)

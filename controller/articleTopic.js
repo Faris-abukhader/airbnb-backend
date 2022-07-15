@@ -31,7 +31,7 @@ const getAllArticleTopics = async(req, reply) => {
             take:articleTopicRange,
             skip:toSkip ? (pageNo-1)*articleTopicRange:0,
           })
-          reply.send({data,pageNumber:Math.ceil(length/25)})                
+          reply.send({data,pageNumber:Math.ceil(length/articleTopicRange)})                
         })
     }catch(error){
         reply.send(error)

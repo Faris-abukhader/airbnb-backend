@@ -29,9 +29,9 @@ const getAllCanelationOptions = async(req,reply)=>{
         await prisma.cancelationOption.count().then(async(length)=>{
             const data = await prisma.cancelationOption.findMany({
                 take:cancelationOptionRange,
-                skip:toSkip ? (pageNo-1)*amenityRange:0,
+                skip:toSkip ? (pageNo-1)*cancelationOptionRange:0,
             })
-            reply.send({data,pageNumber:Math.ceil(length/25)})                
+            reply.send({data,pageNumber:Math.ceil(length/cancelationOptionRange)})                
         })
     }catch(err){
         reply.send(err)

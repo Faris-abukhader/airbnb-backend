@@ -30,7 +30,7 @@ const getAllClients = async(req,reply)=>{
                 take:clientRange,
                 skip:toSkip ? (pageNo-1)*clientRange:0,
             })
-            reply.send({data,pageNumber:Math.ceil(length/25)})    
+            reply.send({data,pageNumber:Math.ceil(length/clientRange)})    
         })
     }catch(error){
      reply.send(error)

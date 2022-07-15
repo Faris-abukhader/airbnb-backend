@@ -29,9 +29,9 @@ const getAllTypes = async(req,reply)=>{
         await prisma.propertyType.count().then(async(length)=>{
             const data = await prisma.propertyType.findMany({
                 take:propertyTypeRange,
-                skip:toSkip ? (pageNo-1)*amenityRange:0,
+                skip:toSkip ? (pageNo-1)*propertyType:0,
             })
-            reply.send({data,pageNumber:Math.ceil(length/25)})                
+            reply.send({data,pageNumber:Math.ceil(length/propertyType)})                
         })
     }catch(err){
         reply.send(err)

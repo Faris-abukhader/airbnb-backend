@@ -81,7 +81,7 @@ const getOnClientNotifications = async(req,reply)=>{
                 take:notificationRange,
                 skip:toSkip ? (pageNo-1)*notificationRange:0,
             })
-            reply.send({data,pageNumber:Math.ceil(length/25)})                
+            reply.send({data,pageNumber:Math.ceil(length/notificationRange)})                
         })
 
     }catch(error){
@@ -118,7 +118,7 @@ const getAllNotifications = async(req,reply)=>{
                 take:notificationRange,
                 skip:toSkip ? (pageNo-1)*notificationRange:0,
             })
-            reply.send({data,pageNumber:Math.ceil(length/25)})                
+            reply.send({data,pageNumber:Math.ceil(length/notificationRange)})                
         })
     }catch(error){
         reply.send(error)

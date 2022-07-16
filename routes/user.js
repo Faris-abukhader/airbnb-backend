@@ -2,6 +2,7 @@ const {
   getOneUserSchema,
   getAllUsersSchema,
   postOneUserSchema,
+  postUserSchema,
   updateOneUserSchema,
   deleteOneUserSchema,
   deleteAllUsersSchema,
@@ -14,6 +15,9 @@ const userRoutes = (fastify, options, done)=> {
   
     // Get single items
     fastify.get('/:id', getOneUserSchema)
+
+    // add item - admin dashboard
+    fastify.post('/admin',postUserSchema)
   
     // Add item
     fastify.post('/', postOneUserSchema)

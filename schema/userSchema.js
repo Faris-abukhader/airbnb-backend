@@ -173,6 +173,7 @@ const {
     getOneUserSchema,
     getAllUsersSchema,
     postOneUserSchema,
+    postUserSchema,
     updateOneUserSchema,
     deleteOneUserSchema,
     deleteAllUsersSchema,

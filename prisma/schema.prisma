@@ -276,7 +276,7 @@ model Transaction{
 model Notification {
   id                     Int                      @id @default(autoincrement())
   recieverId             Int
-  user                   User @relation(fields: [recieverId],references: [id])
+  user                   User @relation(fields: [recieverId],references: [id] ,onDelete: Cascade)
   title                  String
   content                String
   createdAt              DateTime @default(now())

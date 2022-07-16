@@ -5,6 +5,7 @@ const {
   updateOneUserSchema,
   deleteOneUserSchema,
   deleteAllUsersSchema,
+  deleteManyUsersSchema
 } = require('../schema/userSchema')  
 const userRoutes = (fastify, options, done)=> {
   
@@ -21,7 +22,7 @@ const userRoutes = (fastify, options, done)=> {
     fastify.delete('/:id', deleteOneUserSchema)
 
     // Delete all item
-    // fastify.delete('/', deleteAllUsersSchema)
+    fastify.delete('/', deleteManyUsersSchema)
 
     // Update item
     fastify.put('/:id', updateOneUserSchema)

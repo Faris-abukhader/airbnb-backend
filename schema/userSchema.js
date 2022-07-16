@@ -5,6 +5,7 @@ const {
   updateOneUser,
   deleteOneUser,
   deleteAllUsers,
+  deleteManyUsers
 } = require('../controller/user')
 const adminMiddleware = require('../prevalidation/admin')
 const websiteMiddleware = require('../prevalidation/website')
@@ -112,8 +113,24 @@ const {
         },
       },
     },
-   preValidation:websiteMiddleware,
+   preValidation:adminMiddleware,
    handler: deleteAllUsers,
+  }
+
+
+  const deleteManyUsersSchema = {
+    schema: {
+      response: {
+        200:{
+          type:'object',
+          properties:{
+            count:{type:'integer'},
+          }  
+        },
+      },
+    },
+   preValidation:adminMiddleware,
+   handler: deleteManyUsers,
   }
 
   module.exports = {
@@ -122,5 +139,6 @@ const {
     postOneUserSchema,
     updateOneUserSchema,
     deleteOneUserSchema,
-    deleteAllUsersSchema
+    deleteAllUsersSchema,
+    deleteManyUsersSchema
   }

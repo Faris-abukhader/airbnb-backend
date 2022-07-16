@@ -125,7 +125,24 @@ const getAllUsers = async(req, reply) => {
       reply.send(error)
     }
   }
-  
+
+  const deleteManyUsers = async(req,reply)=>{
+    try{
+      const {ids} = req.body
+       const user = await prisma.user.deleteMany({
+         where:{
+           id:{
+             in:ids
+           }
+         }
+       })
+       reply.send(user)
+    }catch(error){
+      reply.send(error)
+    }
+  }
+
+
   const updateOneUser = async(req, reply) => {
     try{
       const { id } = req.params
@@ -152,5 +169,6 @@ const getAllUsers = async(req, reply) => {
     updateOneUser,
     deleteOneUser,
     deleteAllUsers,
+    deleteManyUsers,
   }
   

@@ -67,18 +67,20 @@ const getAllUsers = async(req, reply) => {
                 id:newUser.id,
                 firstName,
                 secondName,
-                image
+                image,
               },
               include:{
                 user:{
                   select:{
-                    role:true
+                    role:true,
+                    email:true
                   }
                 }
               }
             })
             let result = newStaff
             result.role = newStaff.user.role
+            result.email = newStaff.user.email
             reply.code(201).send(result)
           }else{
             const newClient = await prisma.client.create({
@@ -87,9 +89,20 @@ const getAllUsers = async(req, reply) => {
                 firstName,
                 secondName,
                 image
+              },
+              include:{
+                user:{
+                  select:{
+                    role:true,
+                    email:true
+                  }
+                }
               }
             })
-            reply.code(201).send(newClient)
+            let result = newClient
+            result.role = newClient.user.role
+            result.email = newClient.user.email
+            reply.code(201).send(result)
           }
         }
       })

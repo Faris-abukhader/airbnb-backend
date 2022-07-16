@@ -2,6 +2,7 @@ const {
   getAllUsers,
   getOneUser,
   postOneUser,
+  postUser,
   updateOneUser,
   deleteOneUser,
   deleteAllUsers,
@@ -74,6 +75,41 @@ const {
     },
     preValidation:websiteMiddleware,
     handler: postOneUser,
+  }
+
+
+
+  const postUserSchema = {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['email','firstName','secondName','role','image'],
+        properties: {
+          email: { type: 'string' },
+          firstName: { type: 'string' },
+          secondName: { type: 'string' },
+          role: { type: 'string' },
+          image: { type: 'string' },
+        },
+      },
+      response: {
+        201: {
+          type: 'object',
+          properties: {
+            id:  {type:'integer'},
+            email: { type: 'string' },
+            firstName: { type: 'string' },
+            secondName: { type: 'string' },
+            image: { type: 'string' },
+            role: { type: 'string' },
+            createdAt: { type: 'string' },
+            lastUpdate: { type: 'string' },
+          },  
+        },
+      },
+    },
+    preValidation:adminMiddleware,
+    handler: postUser,
   }
 
   const updateOneUserSchema = {

@@ -44,7 +44,62 @@ const getAllUsers = async(req, reply) => {
       reply.send(error)
     }
   }
+
+  // this user for admin dashboard to create new user (admin,staff,client)
+  const postUser = async(req,reply)=>{
+    try{
+      const { email,firstName,secondName,role,image} = req.body
+      await prisma.user.upsert({
+        where:{
+          email
+        },
+        create:{
+          email,
+          role
+        },
+        update:{}
+      }).then(async(newUser)=>{
+        
+        if(newUser.role == 'staff' || newUser.role == 'client'){
+          if(newUser.role == 'staff'){
+            const newStaff = await prisma.staff.create({
+              data:{
+                id:newUser.id,
+                firstName,
+                secondName,
+                image
+              },
+              include:{
+                user:{
+                  select:{
+                    role:true
+                  }
+                }
+              }
+            })
+            let result = newStaff
+            result.role = newStaff.user.role
+            reply.code(201).send(result)
+          }else{
+            const newClient = await prisma.client.create({
+              data:{
+                id:newUser.id,
+                firstName,
+                secondName,
+                image
+              }
+            })
+            reply.code(201).send(newClient)
+          }
+        }
+      })
+
+    }catch(error){
+      reply.send(error)
+    }
+  }
   
+  // this is user for client website in each time the user signin
   const postOneUser = async(req, reply) => {
     try{
       const { email,firstName,secondName,image} = req.body
@@ -166,6 +221,7 @@ const getAllUsers = async(req, reply) => {
     getAllUsers,
     getOneUser,
     postOneUser,
+    postUser,
     updateOneUser,
     deleteOneUser,
     deleteAllUsers,

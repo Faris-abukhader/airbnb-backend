@@ -47,17 +47,14 @@ const getAllUsers = async(req, reply) => {
 
   // this user for admin dashboard to create new user (admin,staff,client)
   const postUser = async(req,reply)=>{
+    console.log('hara hara')
     try{
       const { email,firstName,secondName,role,image} = req.body
-      await prisma.user.upsert({
-        where:{
-          email
-        },
-        create:{
+      await prisma.user.create({
+        data:{
           email,
           role
         },
-        update:{}
       }).then(async(newUser)=>{
         
         if(newUser.role == 'staff' || newUser.role == 'client'){
@@ -81,6 +78,7 @@ const getAllUsers = async(req, reply) => {
             let result = newStaff
             result.role = newStaff.user.role
             result.email = newStaff.user.email
+            delete result.user;
             reply.code(201).send(result)
           }else{
             const newClient = await prisma.client.create({
@@ -102,12 +100,14 @@ const getAllUsers = async(req, reply) => {
             let result = newClient
             result.role = newClient.user.role
             result.email = newClient.user.email
+            delete result.user;
             reply.code(201).send(result)
           }
         }
       })
 
     }catch(error){
+      console.log(error)
       reply.send(error)
     }
   }

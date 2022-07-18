@@ -24,7 +24,27 @@ const getAllUsers = async(req, reply) => {
               }
             
           })
-          reply.send({data,pageNumber:Math.ceil(length/userRange)})                
+
+          let result = data
+          result.map((item)=>{
+            temp = item
+            if(item.client){
+              delete item.staff
+              temp.firstName = item.client.firstName
+              temp.secondName = item.client.secondName
+              delete temp.client
+            }else if(item.staff){
+              delete item.client
+              temp.firstName = item.staff.firstName
+              temp.secondName = item.staff.secondName
+              delete temp.staff
+            }else{
+              delete item.client
+              delete item.staff
+            }
+            return temp
+          })
+          reply.send({data:result,pageNumber:Math.ceil(length/userRange)})                
       })
   }catch(error){
     reply.send(error)

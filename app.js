@@ -1,6 +1,9 @@
 const fastify = require('fastify')({ logger: true })
 const PORT = process.env.PORT || 4500
 const {sign} = require('jsonwebtoken')
+const {PrismaClient} = require('@prisma/client')
+const prisma = new PrismaClient()
+
 
 // documentation ui Swagger library register
 fastify.register(require('@fastify/swagger'), {
@@ -80,3 +83,20 @@ fastify.get('/token/:email',async(req,res)=>{
     const token = sign({email:email},process.env.JWT_SECRET)
     res.send({token})
 })
+
+const forTest = async()=>{
+  // await prisma.user.create({
+  //   data:{
+  //     email:'admin@yahoo.com',
+  //     role:'admin'
+  //   }
+  // })
+  // .then((user)=>{
+  //   const token = sign({email:user.email},process.env.JWT_SECRET)
+  //   console.log(token)
+  // })
+  const token = sign({email:'admin@yahoo.com'},process.env.JWT_SECRET)
+  console.log(token)
+}
+
+// forTest()

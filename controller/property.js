@@ -704,7 +704,8 @@ const disapproveProperty = async(req,reply)=>{
                 delete result.property
         
                 sendNewNotification(ownerId,`Your property ${propertyName} has been refused`,`We sadly inform you that Your property : ${propertyName} has benn refused , make sure to check refused reason before you submit your request again.`)
-                
+                reply.send(result)
+
             }else{
                 const targetProperty = await prisma.propertyApproved.upsert({
                     where:{
@@ -755,13 +756,9 @@ const disapproveProperty = async(req,reply)=>{
                 delete result.property
         
                 sendNewNotification(ownerId,`Your property ${propertyName} has been refused`,`We sadly inform you that Your property : ${propertyName} has benn refused , make sure to check refused reason before you submit your request again.`)
-                
+                reply.send(result)
             }
         })
-    
-
-        
-       reply.send(result)
     }catch(error){
         reply.send(error)
     }

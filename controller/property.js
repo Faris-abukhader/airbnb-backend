@@ -649,53 +649,117 @@ const disapproveProperty = async(req,reply)=>{
         const propertyId = Number.parseInt(req.params.propertyId)
         const staffId = Number.parseInt(req.params.staffId)
         const {reason} = req.body
-        const targetProperty = await prisma.propertyApproved.upsert({
+        await prisma.user.findFirst({
             where:{
-                propertyId
-            },
-            update:{
-                dateOfRefused:new Date(),
-                isRefused:true,
-                reasonOfRefused:reason,
-                isApproved:false,
-            },
-            create:{
-                dateOfRefused:new Date(),
-                isRefused:true,
-                reasonOfRefused:reason,
-                isApproved:false,
-                property:{
-                    connect:{
-                        id:propertyId
-                    }
-                },
-                staff:{
-                    connect:{
-                        id:staffId
-                    }
-                }
-            },
-            include:{
-                property:{
-                    select:{
-                       name:true,
-                       owner:{
-                           select:{
-                               id:true
-                           }
-                       }
-                    }
-                }
-              }
-        })
+                id:staffId
+            }
+        }).then(async(targetUser)=>{
+            if(targetUser.role =='admin'){
+                const targetProperty = await prisma.propertyApproved.upsert({
+                    where:{
+                        propertyId
+                    },
+                    update:{
+                        dateOfRefused:new Date(),
+                        isRefused:true,
+                        reasonOfRefused:reason,
+                        isApproved:false,
+                    },
+                    create:{
+                        dateOfRefused:new Date(),
+                        isRefused:true,
+                        reasonOfRefused:reason,
+                        isApproved:false,
+                        property:{
+                            connect:{
+                                id:propertyId
+                            }
+                        },
+                        admin:{
+                            connect:{
+                                id:staffId
+                            }
+                        }
+                    },
+                    include:{
+                        property:{
+                            select:{
+                               name:true,
+                               owner:{
+                                   select:{
+                                       id:true
+                                   }
+                               }
+                            }
+                        }
+                      }
+                })
 
                 // getting the ownerId and property name from result and then delete it (just for creating notification)
                 let result = targetProperty
                 let ownerId = result.property.owner.id
                 let propertyName = result.property.name
+                result.ownerId = ownerId
+                result.propertyName = propertyName
                 delete result.property
         
                 sendNewNotification(ownerId,`Your property ${propertyName} has been refused`,`We sadly inform you that Your property : ${propertyName} has benn refused , make sure to check refused reason before you submit your request again.`)
+                
+            }else{
+                const targetProperty = await prisma.propertyApproved.upsert({
+                    where:{
+                        propertyId
+                    },
+                    update:{
+                        dateOfRefused:new Date(),
+                        isRefused:true,
+                        reasonOfRefused:reason,
+                        isApproved:false,
+                    },
+                    create:{
+                        dateOfRefused:new Date(),
+                        isRefused:true,
+                        reasonOfRefused:reason,
+                        isApproved:false,
+                        property:{
+                            connect:{
+                                id:propertyId
+                            }
+                        },
+                        staff:{
+                            connect:{
+                                id:staffId
+                            }
+                        }
+                    },
+                    include:{
+                        property:{
+                            select:{
+                               name:true,
+                               owner:{
+                                   select:{
+                                       id:true
+                                   }
+                               }
+                            }
+                        }
+                      }
+                })
+
+                // getting the ownerId and property name from result and then delete it (just for creating notification)
+                let result = targetProperty
+                let ownerId = result.property.owner.id
+                let propertyName = result.property.name
+                result.ownerId = ownerId
+                result.propertyName = propertyName
+                delete result.property
+        
+                sendNewNotification(ownerId,`Your property ${propertyName} has been refused`,`We sadly inform you that Your property : ${propertyName} has benn refused , make sure to check refused reason before you submit your request again.`)
+                
+            }
+        })
+    
+
         
        reply.send(result)
     }catch(error){

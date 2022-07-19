@@ -22,7 +22,7 @@ model User {
 }
 
 model Property{
-  id            Int                 @id @default(autoincrement())
+  id            Int                 @id @default(autoincrement()) @unique
   ownerId       Int
   owner         Client              @relation(fields: [ownerId],references: [id])
   name          String
@@ -101,8 +101,8 @@ model PropertyApproved {
   propertyId          Int         @unique  
   staffId             Int?
   adminId             Int?
-  admin               Admin?      @relation(fields: [adminId],references: [id],onDelete: Cascade)         
-  staff               Staff?      @relation(fields: [staffId],references: [id])
+  admin               Admin?      @relation(fields: [adminId],references: [id],onDelete: SetNull)         
+  staff               Staff?      @relation(fields: [staffId],references: [id],onDelete: SetNull)
   property            Property    @relation(fields: [propertyId],references: [id],onDelete: Cascade)
   isApproved          Boolean?
   approvedDate        DateTime?
@@ -229,7 +229,7 @@ model cancelationPolicy {
   id                     Int                      @id @default(autoincrement())
   propertyId             Int                      @unique
   property               Property @relation(fields: [propertyId],references: [id],onDelete: Cascade)
-  name                   String  @unique
+  name                   String 
   offSetMilli            Decimal @db.Decimal(20,0)
 }
 

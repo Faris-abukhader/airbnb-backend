@@ -532,52 +532,112 @@ const approveProperty = async(req,reply)=>{
     try{
         const propertyId = Number.parseInt(req.params.propertyId)
         const staffId = Number.parseInt(req.params.staffId)
-        const targetProperty = await prisma.propertyApproved.upsert({
+        await prisma.user.findFirst({
             where:{
-                propertyId
-            },
-            update:{
-                approvedDate:new Date(),
-                isApproved:true,
-                isRefused:false,
-            },
-            create:{
-                approvedDate:new Date(),
-                isApproved:true,
-                isRefused:false,
-                property:{
-                    connect:{
-                        id:propertyId
+                id:staffId
+            }
+        }).then(async(targetUser)=>{
+            if(targetUser.role == 'admin'){
+               const targetProperty = await prisma.propertyApproved.upsert({
+                    where:{
+                        propertyId
+                    },
+                    update:{
+                        approvedDate:new Date(),
+                        isApproved:true,
+                        isRefused:false,
+                    },
+                    create:{
+                        approvedDate:new Date(),
+                        isApproved:true,
+                        isRefused:false,
+                        property:{
+                            connect:{
+                                id:propertyId
+                            }
+                        },
+                        admin:{
+                            connect:{
+                                id:staffId
+                            }
+                        }
+                    },
+                    include:{
+                        property:{
+                            select:{
+                               name:true,
+                               owner:{
+                                   select:{
+                                       id:true
+                                   }
+                               }
+                            }
+                        }
                     }
-                },
-                staff:{
-                    connect:{
-                        id:staffId
+                })        
+
+                console.log(targetProperty)
+                // getting the ownerId and property name from result and then delete it (just for creating notification)
+                let result = targetProperty
+                let ownerId = result.property.owner.id
+                let propertyName = result.property.name
+                result.ownerId = ownerId
+                result.propertyName = propertyName
+                delete result.property
+                console.log(result)
+                sendNewNotification(ownerId,`Your property ${propertyName} has been accepted`,`We happy you to inform you that Your property : ${propertyName} has benn accepted , your property now will be available to public.`)
+                reply.send(result)        
+
+            }else{
+               const targetProperty = await prisma.propertyApproved.upsert({
+                    where:{
+                        propertyId
+                    },
+                    update:{
+                        approvedDate:new Date(),
+                        isApproved:true,
+                        isRefused:false,
+                    },
+                    create:{
+                        approvedDate:new Date(),
+                        isApproved:true,
+                        isRefused:false,
+                        property:{
+                            connect:{
+                                id:propertyId
+                            }
+                        },
+                        staff:{
+                            connect:{
+                                id:staffId
+                            }
+                        }
+                    },
+                    include:{
+                        property:{
+                            select:{
+                               name:true,
+                               owner:{
+                                   select:{
+                                       id:true
+                                   }
+                               }
+                            }
+                        }
                     }
-                }
-            },
-            include:{
-                property:{
-                    select:{
-                       name:true,
-                       owner:{
-                           select:{
-                               id:true
-                           }
-                       }
-                    }
-                }
+                })        
+
+                // getting the ownerId and property name from result and then delete it (just for creating notification)
+                let result = targetProperty
+                let ownerId = result.property.owner.id
+                let propertyName = result.property.name
+                result.ownerId = ownerId
+                result.propertyName = propertyName
+                delete result.property
+                sendNewNotification(ownerId,`Your property ${propertyName} has been accepted`,`We happy you to inform you that Your property : ${propertyName} has benn accepted , your property now will be available to public.`)
+                reply.send(result)        
             }
         })
-
-        // getting the ownerId and property name from result and then delete it (just for creating notification)
-        let result = targetProperty
-        let ownerId = result.property.owner.id
-        let propertyName = result.property.name
-        delete result.property
-
-        sendNewNotification(ownerId,`Your property ${propertyName} has been accepted`,`We happy you to inform you that Your property : ${propertyName} has benn accepted , your property now will be available to public.`)
-        reply.send(result)
     }catch(error){
         console.log(error)
         reply.send(error)

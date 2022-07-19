@@ -557,16 +557,16 @@ const approveProperty = async(req,reply)=>{
                 }
             },
             include:{
-              property:{
-                  select:{
-                     name:true,
-                     owner:{
-                         select:{
-                             id:true
-                         }
-                     }
-                  }
-              }
+                property:{
+                    select:{
+                       name:true,
+                       owner:{
+                           select:{
+                               id:true
+                           }
+                       }
+                    }
+                }
             }
         })
 
@@ -575,10 +575,9 @@ const approveProperty = async(req,reply)=>{
         let ownerId = result.property.owner.id
         let propertyName = result.property.name
         delete result.property
-//        sendNewNotification(ownerId,`Your property ${propertyName} has been accepted`,`Your property ${propertyName} has received new booking request , make sure to check the request and accept it if now problem.`)
 
         sendNewNotification(ownerId,`Your property ${propertyName} has been accepted`,`We happy you to inform you that Your property : ${propertyName} has benn accepted , your property now will be available to public.`)
-       reply.send(result)
+        reply.send(result)
     }catch(error){
         console.log(error)
         reply.send(error)

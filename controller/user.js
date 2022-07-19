@@ -20,7 +20,8 @@ const getAllUsers = async(req, reply) => {
               skip:toSkip ? (pageNo-1)*userRange:0,
               include:{
                 client:true,
-                staff:true
+                staff:true,
+                admin:true
               }
             
           })
@@ -30,17 +31,27 @@ const getAllUsers = async(req, reply) => {
             temp = item
             if(item.client){
               delete item.staff
+              delete item.admin
               temp.firstName = item.client.firstName
               temp.secondName = item.client.secondName
               delete temp.client
             }else if(item.staff){
               delete item.client
+              delete item.admin
               temp.firstName = item.staff.firstName
               temp.secondName = item.staff.secondName
               delete temp.staff
-            }else{
+            }else if(item.admin){
               delete item.client
               delete item.staff
+              temp.firstName = item.admin.firstName
+              temp.secondName = item.admin.secondName
+              delete temp.admin
+            }
+            else{
+              delete item.client
+              delete item.staff
+              delete item.admin
             }
             return temp
           })
@@ -67,7 +78,6 @@ const getAllUsers = async(req, reply) => {
 
   // this user for admin dashboard to create new user (admin,staff,client)
   const postUser = async(req,reply)=>{
-    console.log('hara hara')
     try{
       const { email,firstName,secondName,role,image} = req.body
       await prisma.user.create({
@@ -76,8 +86,6 @@ const getAllUsers = async(req, reply) => {
           role
         },
       }).then(async(newUser)=>{
-        
-        if(newUser.role == 'staff' || newUser.role == 'client'){
           if(newUser.role == 'staff'){
             const newStaff = await prisma.staff.create({
               data:{
@@ -100,7 +108,7 @@ const getAllUsers = async(req, reply) => {
             result.email = newStaff.user.email
             delete result.user;
             reply.code(201).send(result)
-          }else{
+          }else if(newUser.role == 'client'){
             const newClient = await prisma.client.create({
               data:{
                 id:newUser.id,
@@ -122,8 +130,29 @@ const getAllUsers = async(req, reply) => {
             result.email = newClient.user.email
             delete result.user;
             reply.code(201).send(result)
+          }else{
+            const newAdmin = await prisma.admin.create({
+              data:{
+                id:newUser.id,
+                firstName,
+                secondName,
+                image
+              },
+              include:{
+                user:{
+                  select:{
+                    role:true,
+                    email:true
+                  }
+                }
+              }
+            })
+            let result = newAdmin
+            result.role = newAdmin.user.role
+            result.email = newAdmin.user.email
+            delete result.user;
+            reply.code(201).send(result)
           }
-        }
       })
 
     }catch(error){

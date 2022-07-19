@@ -14,6 +14,7 @@ model User {
   role          String               @default("client")
   client        Client?
   staff         Staff?
+  admin         Admin?
   notifications Notification[]
   createdAt               DateTime    @default(now())
   lastUpdate              DateTime    @updatedAt @default(now())
@@ -97,9 +98,11 @@ model Image{
 
 model PropertyApproved {
   id                  Int         @id @default(autoincrement())
-  propertyId          Int         @unique     
-  staffId             Int         
-  staff               Staff       @relation(fields: [staffId],references: [id])
+  propertyId          Int         @unique  
+  staffId             Int?
+  adminId             Int?
+  admin               Admin?      @relation(fields: [adminId],references: [id],onDelete: Cascade)         
+  staff               Staff?      @relation(fields: [staffId],references: [id])
   property            Property    @relation(fields: [propertyId],references: [id],onDelete: Cascade)
   isApproved          Boolean?
   approvedDate        DateTime?
@@ -157,6 +160,21 @@ model PropertyFacility{
 
 
 model Staff{
+    id                      Int                      @id @default(autoincrement())
+    user                    User @relation(fields: [id],references: [id],onDelete: Cascade)
+    firstName               String
+    secondName              String
+    image                   String
+    createdAt               DateTime @default(now())
+    lastUpdate              DateTime @updatedAt
+    propertyApprove         PropertyApproved[]
+    articles                Article[]
+    @@index([id])
+}
+
+
+
+model Admin{
     id                      Int                      @id @default(autoincrement())
     user                    User @relation(fields: [id],references: [id],onDelete: Cascade)
     firstName               String
@@ -297,8 +315,10 @@ model Article{
   content                 String            @db.Text
   title                   String
   description             String
-  publisherId             Int
-  publisher               Staff             @relation(fields: [publisherId],references: [id])
+  publisherId             Int?
+  adminId                 Int?
+  admin                   Admin?             @relation(fields: [adminId],references: [id])
+  publisher               Staff?             @relation(fields: [publisherId],references: [id])
   seenNumber              Int               @default(0)
   createdAt               DateTime          @default(now())
   lastUpdate              DateTime          @updatedAt

@@ -40,7 +40,7 @@ const getAllAmenities = async(req,reply)=>{
 
 const createOneAmenity = async(req,reply)=>{
     try{
-        const {name} = req.body
+        const {name,icon} = req.body
         const newAmenity = await prisma.amenity.create({
             data:{
                 name,

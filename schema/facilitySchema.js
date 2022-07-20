@@ -1,4 +1,3 @@
-const { deleteManyAmenites } = require('../controller/amenity')
 const {    
     getOneFacility,
     getAllFacilities,
@@ -6,7 +5,8 @@ const {
     createManyFacilities,
     updateOneFacility,
     deleteOneFacility,
-    deleteAllFacilities
+    deleteAllFacilities,
+    deleteManyFacilities
       } = require('../controller/facility')
   const adminMiddleware = require('../prevalidation/admin')
   const websiteMiddleware = require('../prevalidation/website')
@@ -148,7 +148,7 @@ const {
         },
       },
       preValidation:adminMiddleware,
-      handler: deleteManyAmenites,
+      handler: deleteManyFacilities,
     }
 
   

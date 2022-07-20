@@ -94,9 +94,8 @@ const {
     schema: {
       body:{
         type:'object',
-        required:['title','id'],
+        required:['title'],
         properties:{
-          id:{type:'integer'},
           title:{type:'string'}
         }
       },

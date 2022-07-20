@@ -62,7 +62,8 @@ const postManyArticleTopics = async(req, reply) => {
 
 const updateOneArticle = async(req,reply)=>{
     try{
-        const {id,title} = req.body
+        const id = Number.parseInt(req.params.id)
+        const {title} = req.body
         const data = await prisma.articleTopic.update({
             where:{
                 id
@@ -80,7 +81,7 @@ const updateOneArticle = async(req,reply)=>{
 
 const deleteArticleTopic = async(req, reply) => {
     try{
-        const {id} = req.body
+        const id = Number.parseInt(req.params.id)
         const data = await prisma.articleTopic.delete({where:{id}})
         reply.send(data)
     }catch(error){

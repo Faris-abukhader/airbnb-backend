@@ -101,7 +101,7 @@ const getAllStaffs = async(req,reply)=>{
 const updateOneStaff = async(req,reply)=>{
     try{
        const id = Number.parseInt(req.params.id)
-       const {firstName,secondName,image} = req.body
+       const {email,firstName,secondName,image} = req.body
        const staff = await prisma.staff.update({
            where:{
                id

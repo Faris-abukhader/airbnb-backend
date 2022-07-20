@@ -110,6 +110,11 @@ const updateOneStaff = async(req,reply)=>{
             firstName,
             secondName,
             image,
+            user:{
+              update:{
+                email,
+              }
+            }
            },
            include:{
              user:{

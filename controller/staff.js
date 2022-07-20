@@ -136,7 +136,7 @@ const updateOneStaff = async(req,reply)=>{
 const deleteOneStaff = async(req,reply)=>{
     try{
         const id = Number.parseInt(req.params.id)
-        const staff = await prisma.staff.delete({
+        const staff = await prisma.user.delete({
             where:{
                 id
             }
@@ -159,7 +159,7 @@ const deleteAllStaff = async(req,reply)=>{
 const deleteManyStaff = async(req,reply)=>{
   try{
       const {ids} = req.body
-      const data = await prisma.articleTopic.deleteMany({
+      const data = await prisma.user.deleteMany({
           where:{
               id:{
                   in:ids

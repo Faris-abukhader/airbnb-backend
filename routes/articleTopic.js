@@ -26,7 +26,7 @@ const articleTopicRoutes = (fastify, options, done)=> {
     fastify.delete('/:id', deleteArticleTopicObject)
 
     // Delete all items
-    fastify.delete('/many', deleteManyArticleTopicObjects)
+    fastify.delete('/', deleteManyArticleTopicObjects)
   
     // Update item
     fastify.put('/:id', updateArticleTopicObject)

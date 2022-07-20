@@ -76,8 +76,22 @@ const getAllStaffs = async(req,reply)=>{
           const data = await prisma.staff.findMany({
               take:staffRange,
               skip:toSkip ? (pageNo-1)*staffRange:0,
+              include:{
+                user:{
+                  select:{
+                    email:true
+                  }
+                }
+              }
           })
-          reply.send({data,pageNumber:Math.ceil(length/staffRange)})                
+          let result = data 
+          result.map((staff)=>{
+            temp = staff
+            temp.email = staff.user.email
+            delete temp.user
+            return temp
+          })
+          reply.send({data:result,pageNumber:Math.ceil(length/staffRange)})                
       })
   }catch(error){
      reply.send(error)

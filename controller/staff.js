@@ -110,9 +110,19 @@ const updateOneStaff = async(req,reply)=>{
             firstName,
             secondName,
             image,
+           },
+           include:{
+             user:{
+               select:{
+                 email:true
+               }
+             }
            }
        })
-       reply.send(staff)
+       let result = staff
+       result.email = staff.user.email
+       delete result.user 
+       reply.send(result)
     }catch(error){
      reply.send(error)
     }

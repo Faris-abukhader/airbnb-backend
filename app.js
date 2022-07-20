@@ -3,6 +3,8 @@ const PORT = process.env.PORT || 4500
 const {sign} = require('jsonwebtoken')
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
+const bcrypt = require('bcrypt')
+const saltRounds = 10
 
 
 // documentation ui Swagger library register
@@ -64,6 +66,7 @@ fastify.register(require('./routes/amenity'),{prefix:'/amenity'})
 fastify.register(require('./routes/article'),{prefix:'/article'})
 fastify.register(require('./routes/cancelationOption'),{prefix:'/cancelationOption'})
 fastify.register(require('./routes/propertyType'),{prefix:'/propertyType'})
+fastify.register(require('./routes/auth'),{prefix:'/auth'})
 
 // Run the server!
 const start = async () => {
@@ -78,11 +81,6 @@ const start = async () => {
 start()
 
 
-fastify.get('/token/:email',async(req,res)=>{
-    const {email} = req.params
-    const token = sign({email:email},process.env.JWT_SECRET)
-    res.send({token})
-})
 
 const forTest = async()=>{
   // await prisma.user.create({
@@ -100,3 +98,54 @@ const forTest = async()=>{
 }
 
 // forTest()
+
+const generateAdmin = async(email,firstName,secondName,image,password)=>{
+  bcrypt.hash(password, saltRounds,async function(err, hash) {
+
+    if(err) {
+      console.log(err)
+      return
+    }
+    
+   const newAdmin =  await prisma.user.create({
+      data:{
+         email,
+         role:'admin',
+         admin:{
+           create:{
+             firstName,
+             secondName,
+             image,
+             password:hash
+           }
+         }
+      },
+      include:{
+        admin:{
+          select:{
+            firstName:true,
+            secondName:true,
+            image:true,
+            password:true
+          }
+        }
+      }
+    })
+
+    console.log(newAdmin)
+    
+  });
+}
+
+try{
+//generateAdmin('faresraed2011@yahoo.com','FaRiS','raed',' ','FaRiS_455')
+}catch(error){
+ console.log(error)
+}
+
+
+const generateWebsiteToken = ()=>{
+  const token = sign({website:process.env.API_URL,date:new Date()},process.env.JWT_SECRET)
+  console.log(token)
+}
+//generateWebsiteToken()

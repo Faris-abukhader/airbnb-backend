@@ -305,6 +305,19 @@ const articleTopicObject = {
     }
   }
 
+  const adminObject = {
+    type:'object',
+    properties:{
+      id:{type:'integer'},                    
+      firstName:{type:'string'}, 
+      secondName:{type:'string'},                          
+      email:{type:'string'},                           
+      image:{type:'string'},                    
+      createdAt:{type:'string'},                       
+      lastUpdate:{type:'string'}, 
+    }
+  }
+
 
 module.exports = {
     amenityObject,
@@ -325,5 +338,6 @@ module.exports = {
     paymentCardObject,
     transactionObject,
     cancelOptionObject,
-    propertyTypeObject
+    propertyTypeObject,
+    adminObject,
 }

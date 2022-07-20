@@ -177,6 +177,7 @@ model Staff{
 model Admin{
     id                      Int                      @id @default(autoincrement())
     user                    User @relation(fields: [id],references: [id],onDelete: Cascade)
+    password                String @default(" ")
     firstName               String
     secondName              String
     image                   String

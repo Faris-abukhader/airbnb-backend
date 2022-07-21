@@ -92,6 +92,7 @@ const {
           200: {
             type:'object',
             properties:{
+            id:{type:'integer'},
             email:{type:'string'},
             firstName:{type:'string'},
             secondName:{type:'string'},

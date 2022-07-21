@@ -114,6 +114,13 @@ const getAllOrders = async(req,reply)=>{
                 take:orderRange,
                 skip:toSkip ? (pageNo-1)*orderRange:0,
                 include:{
+                    property:{
+                       select:{
+                           name:true,
+                           country:true,
+                           city:true
+                       }
+                    },
                     review:true,
                     guestInfo:true,
                     paymentCard:true,

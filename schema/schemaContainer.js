@@ -108,7 +108,11 @@ const articleTopicObject = {
     properties: {
       id:{type:'integer'},
       email: { type: 'string' },
-      role:{type:'string'}
+      firstName:{type:'string'},
+      secondName:{type:'string'},
+      image:{type:'string'},
+      createdAt:{type:'string'},
+      lastUpdate:{type:'string'},
     },
   }
 

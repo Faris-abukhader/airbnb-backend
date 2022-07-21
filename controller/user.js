@@ -265,18 +265,82 @@ const getAllUsers = async(req, reply) => {
 
   const updateOneUser = async(req, reply) => {
     try{
-      const { id } = req.params
-      const {email,password} = req.body  
+      const id = Number.parseInt(req.params.id)
+      const {email,firstName,secondName,image} = req.body  
+      var data = {}
+      await prisma.user.findUnique({
+        where:{
+          id
+        }
+      }).then(async(targetUser)=>{
+        data.email = email
+        if(targetUser.role=='admin'){
+          data.admin = {
+            update:{
+              firstName,
+              secondName,
+              image   
+            }
+          }
+        }else if(targetUser.role=='staff'){
+          data.staff ={
+            update:{
+              firstName,
+              secondName,
+              image   
+            }
+          }
+        }else{
+          data.client = {
+             update:{
+              firstName,
+              secondName,
+              image    
+             }
+          }
+        }
+      })
+
       const user = await prisma.user.update({
         where:{
             id:id
         },
-        data:{
-            email,
-            password,
+        data
+        ,
+        include:{
+          admin:{
+            select:{
+              firstName:true,
+              secondName:true,
+              image:true,
+            }
+          },
+          staff:true,
+          client:true
         }
     })
-    reply.send(user)
+    console.log(user)
+    let result = user
+    if(user.role=='admin'){
+      result.firstName = user.admin.firstName
+      result.secondName = user.admin.secondName
+      result.image = user.admin.image
+    }else if(user.role=='staff'){
+      result.firstName = user.staff.firstName
+      result.secondName = user.staff.secondName
+      result.image = user.staff.image
+    }else{
+      result.firstName = user.client.firstName
+      result.secondName = user.client.secondName
+      result.image = user.client.image
+    }
+    delete result.admin
+    delete result.client
+    delete result.staff
+
+    console.log(result)
+
+    reply.send(result)
     }catch(error){
       reply.send(error)
     }

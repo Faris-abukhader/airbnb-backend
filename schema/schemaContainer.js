@@ -110,6 +110,7 @@ const articleTopicObject = {
       email: { type: 'string' },
       firstName:{type:'string'},
       secondName:{type:'string'},
+      role:{type:'string'},
       image:{type:'string'},
       createdAt:{type:'string'},
       lastUpdate:{type:'string'},

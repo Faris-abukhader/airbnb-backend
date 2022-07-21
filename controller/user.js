@@ -34,18 +34,21 @@ const getAllUsers = async(req, reply) => {
               delete item.admin
               temp.firstName = item.client.firstName
               temp.secondName = item.client.secondName
+              temp.image = item.client.image
               delete temp.client
             }else if(item.staff){
               delete item.client
               delete item.admin
               temp.firstName = item.staff.firstName
               temp.secondName = item.staff.secondName
+              temp.image = item.staff.image
               delete temp.staff
             }else if(item.admin){
               delete item.client
               delete item.staff
               temp.firstName = item.admin.firstName
               temp.secondName = item.admin.secondName
+              temp.image = item.admin.image
               delete temp.admin
             }
             else{

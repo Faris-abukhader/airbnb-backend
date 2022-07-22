@@ -18,11 +18,10 @@ const sendOneNotification = async({recieverId,title,content})=>{
 
 const createOneNotification = async(req,reply)=>{
     try{
-        const {senderId,recieverId,title,content} = req.body
+        const {recieverId,title,content} = req.body
 
         const notification = await prisma.notification.create({
             data:{
-                senderId,
                 recieverId,
                 title,
                 content,

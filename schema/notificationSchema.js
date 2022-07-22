@@ -94,9 +94,8 @@ const {
       schema: {
         body: {
           type: 'object',
-          required: ['senderId','recieverId','title','content'],
+          required: ['recieverId','title','content'],
           properties: {
-            senderId: { type: 'integer' },
             recieverId: { type: 'integer' },
             title: { type: 'string' },
             content: { type: 'string' },

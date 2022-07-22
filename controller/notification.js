@@ -25,7 +25,6 @@ const createOneNotification = async(req,reply)=>{
                 recieverId,
                 title,
                 content,
-                isSeen:false
             }
         })
 

@@ -48,11 +48,9 @@ const articleTopicObject = {
     type: 'object',
     properties: {
       id: { type: 'integer' },
-      senderId: { type: 'integer' },
       recieverId: { type: 'integer' },
       title: { type: 'string' },
       content: { type: 'string' },
-      isSeen: { type: 'integer' },
       createdAt:{type:'string'}
     },
   }
